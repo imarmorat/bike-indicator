@@ -8,7 +8,6 @@
 *.sln.docstates
 
 # arduino specific
-__vm/
 x64/
 
 # User-specific files (MonoDevelop/Xamarin Studio)
