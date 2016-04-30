@@ -4,6 +4,7 @@
 int led = 13;
 #define LEFTRING_PIN 1
 #define RIGHTRING_PIN 0
+#define BAR_PIN 2
 #define BREAKING_BUTTON_PIN 4
 #define TURNLEFT_BUTTON_PIN 5
 #define TURNRIGHT_BUTTON_PIN 6
@@ -11,6 +12,7 @@ uint8_t offset = 0;
 
 Adafruit_NeoPixel leftRingPixels = Adafruit_NeoPixel(16, LEFTRING_PIN, NEO_RGBW + NEO_KHZ800);
 Adafruit_NeoPixel rightRingPixels = Adafruit_NeoPixel(16, RIGHTRING_PIN, NEO_RGBW + NEO_KHZ800);
+Adafruit_NeoPixel middleBarsPixels = Adafruit_NeoPixel(16, BAR_PIN, NEO_RGBW + NEO_KHZ800);
 uint32_t blinkerColor = leftRingPixels.Color(128, 255, 6);
 uint32_t breakColor = leftRingPixels.Color(0, 255, 0); // green red blue format
 
@@ -36,6 +38,8 @@ void setup() {
 	leftRingPixels.setBrightness(60); 
 	rightRingPixels.begin();
 	rightRingPixels.setBrightness(60); 
+	middleBarsPixels.begin();
+	middleBarsPixels.setBrightness(60);
 
 	attachInterrupt(BREAKING_BUTTON_PIN, breakButtonActivated, FALLING); 
 	attachInterrupt(TURNLEFT_BUTTON_PIN, turnLeftButtonActivated, FALLING); 
@@ -79,8 +83,10 @@ void loop() {
 	case Mode_none:
 		leftRingPixels.clear();
 		rightRingPixels.clear();
+		middleBarsPixels.clear();
 		leftRingPixels.show();
 		rightRingPixels.show();
+		middleBarsPixels.show();
 		break;
 
 	case Mode_blinkLeft:
@@ -109,9 +115,11 @@ void loop() {
 		{
 			leftRingPixels.setPixelColor(i, breakColor);
 			rightRingPixels.setPixelColor(i, breakColor);
+			middleBarsPixels.setPixelColor(i, breakColor);
 		}
 		leftRingPixels.show();
 		rightRingPixels.show();
+		middleBarsPixels.show();
 		break;
 	}
 
