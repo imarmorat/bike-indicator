@@ -57,4 +57,8 @@ typedef void *__builtin_va_list;
 
 #define NEW_H
 #include <..\bike-indicator\bike-indicator.ino>
+#include <..\bike-indicator\SimpleAnimation.cpp>
+#include <..\bike-indicator\SimpleAnimation.h>
+#include <..\bike-indicator\TurnLeftAnimation.cpp>
+#include <..\bike-indicator\TurnLeftAnimation.h>
 #endif

@@ -1,3 +1,5 @@
+#include "TurnLeftAnimation.h"
+#include "SimpleAnimation.h"
 #include <Adafruit_NeoPixel.h>
 
 
@@ -15,6 +17,11 @@ Adafruit_NeoPixel rightRingPixels = Adafruit_NeoPixel(16, RIGHTRING_PIN, NEO_RGB
 Adafruit_NeoPixel middleBarsPixels = Adafruit_NeoPixel(16, BAR_PIN, NEO_RGBW + NEO_KHZ800);
 uint32_t blinkerColor = leftRingPixels.Color(128, 255, 6);
 uint32_t breakColor = leftRingPixels.Color(0, 255, 0); // green red blue format
+
+SimpleAnimation a1;
+SimpleAnimation a2;
+SimpleAnimation a3;
+TurnLeftAnimation tla;
 
 enum Mode
 {
@@ -41,9 +48,19 @@ void setup() {
 	middleBarsPixels.begin();
 	middleBarsPixels.setBrightness(60);
 
+	leftRingPixels.clear();
+	rightRingPixels.clear();
+	middleBarsPixels.clear();
+	leftRingPixels.show();
+	rightRingPixels.show();
+	middleBarsPixels.show();
+
 	attachInterrupt(BREAKING_BUTTON_PIN, breakButtonActivated, FALLING); 
 	attachInterrupt(TURNLEFT_BUTTON_PIN, turnLeftButtonActivated, FALLING); 
 	attachInterrupt(TURNRIGHT_BUTTON_PIN, turnRightButtonActivated, FALLING); 
+
+	tla.init(&leftRingPixels, &middleBarsPixels, &rightRingPixels);
+	a1.init(); a2.init(); a3.init();
 }
 
 void breakButtonActivated()
@@ -73,30 +90,30 @@ void turnRightButtonActivated()
 // the loop routine runs over and over again forever:
 void loop() {
 	uint8_t  i;
-	digitalWrite(led, HIGH);
-	delay(100);              
-	digitalWrite(led, LOW);    
-	delay(100);
-	Serial.println(currentMode);
+	//digitalWrite(led, HIGH);
+	//delay(100);              
+	//digitalWrite(led, LOW);    
+	//delay(100);
+	//Serial.println(currentMode);
+
 	switch (currentMode)
 	{
 	case Mode_none:
-		leftRingPixels.clear();
-		rightRingPixels.clear();
-		middleBarsPixels.clear();
-		leftRingPixels.show();
-		rightRingPixels.show();
-		middleBarsPixels.show();
+		a1.step(&leftRingPixels);
+		a2.step(&rightRingPixels);
+		a3.step(&middleBarsPixels);
+		delay(100);
 		break;
 
 	case Mode_blinkLeft:
-		for (i = 0; i<16; i++) { leftRingPixels.setPixelColor(i, blinkerColor); }
-		leftRingPixels.show();
-		delay(500);
+		tla.step();
+		//for (i = 0; i<16; i++) { leftRingPixels.setPixelColor(i, blinkerColor); }
+		//leftRingPixels.show();
+		//delay(500);
 
-		for (i = 0; i<16; i++) { leftRingPixels.setPixelColor(i, 0x000000); }
-		leftRingPixels.show();
-		delay(500);
+		//for (i = 0; i<16; i++) { leftRingPixels.setPixelColor(i, 0x000000); }
+		//leftRingPixels.show();
+		//delay(500);
 		break;
 
 
