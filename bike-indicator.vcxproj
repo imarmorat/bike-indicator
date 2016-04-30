@@ -123,12 +123,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SimpleAnimation.h" />
-    <ClInclude Include="TurnLeftAnimation.h" />
+    <ClInclude Include="TurnAnimation.h" />
     <ClInclude Include="__vm\.bike-indicator.vsarduino.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SimpleAnimation.cpp" />
-    <ClCompile Include="TurnLeftAnimation.cpp" />
+    <ClCompile Include="TurnAnimation.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

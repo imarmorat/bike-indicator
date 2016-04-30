@@ -21,18 +21,18 @@
     <ClInclude Include="__vm\.bike-indicator.vsarduino.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TurnLeftAnimation.h">
+    <ClInclude Include="SimpleAnimation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SimpleAnimation.h">
+    <ClInclude Include="TurnAnimation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="TurnLeftAnimation.cpp">
+    <ClCompile Include="SimpleAnimation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SimpleAnimation.cpp">
+    <ClCompile Include="TurnAnimation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

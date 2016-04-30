@@ -9,7 +9,7 @@
 
 #include <Adafruit_NeoPixel.h>
 
-class TurnLeftAnimation
+class TurnAnimation
 {
 protected:
 	int _currentPosition = 0;
@@ -21,7 +21,7 @@ protected:
 public:
 	void init(Adafruit_NeoPixel *leftRing, Adafruit_NeoPixel *middleBar, Adafruit_NeoPixel *rightRing);
 	void reset();
-	void step();
+	void step(int direction);
 };
 
 #endif

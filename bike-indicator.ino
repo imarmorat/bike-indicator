@@ -1,4 +1,4 @@
-#include "TurnLeftAnimation.h"
+#include "TurnAnimation.h"
 #include "SimpleAnimation.h"
 #include <Adafruit_NeoPixel.h>
 
@@ -21,7 +21,7 @@ uint32_t breakColor = leftRingPixels.Color(0, 255, 0); // green red blue format
 SimpleAnimation a1;
 SimpleAnimation a2;
 SimpleAnimation a3;
-TurnLeftAnimation tla;
+TurnAnimation tla;
 
 enum Mode
 {
@@ -106,7 +106,7 @@ void loop() {
 		break;
 
 	case Mode_blinkLeft:
-		tla.step();
+		tla.step(0);
 		//for (i = 0; i<16; i++) { leftRingPixels.setPixelColor(i, blinkerColor); }
 		//leftRingPixels.show();
 		//delay(500);
@@ -118,13 +118,14 @@ void loop() {
 
 
 	case Mode_blinkRight:
-		for (i = 0; i<16; i++) { rightRingPixels.setPixelColor(i, blinkerColor); }
-		rightRingPixels.show();
-		delay(500);
+		tla.step(1);
+		//for (i = 0; i<16; i++) { rightRingPixels.setPixelColor(i, blinkerColor); }
+		//rightRingPixels.show();
+		//delay(500);
 
-		for (i = 0; i<16; i++) { rightRingPixels.setPixelColor(i, 0x000000); }
-		rightRingPixels.show();
-		delay(500);
+		//for (i = 0; i<16; i++) { rightRingPixels.setPixelColor(i, 0x000000); }
+		//rightRingPixels.show();
+		//delay(500);
 		break;
 
 	case Mode_breaking:
