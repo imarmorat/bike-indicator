@@ -12,7 +12,6 @@
 #define _VSARDUINO_H_
 #define __HARDWARE_MK20dx256__
 #define __HARDWARE_MK20DX256__
-#define _VMDEBUG 1
 #define __MK20DX256__
 #define TEENSYDUINO 128
 #define ARDUINO 10608
@@ -56,9 +55,9 @@ typedef void *__builtin_va_list;
 //#define noInterrupts() __disable_irq()
 
 #define NEW_H
-#include <..\bike-indicator\bike-indicator.ino>
-#include <..\bike-indicator\SimpleAnimation.cpp>
-#include <..\bike-indicator\SimpleAnimation.h>
-#include <..\bike-indicator\TurnAnimation.cpp>
-#include <..\bike-indicator\TurnAnimation.h>
+#include <bike-indicator.ino>
+#include <SimpleAnimation.cpp>
+#include <SimpleAnimation.h>
+#include <TurnAnimation.cpp>
+#include <TurnAnimation.h>
 #endif

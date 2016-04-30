@@ -171,8 +171,6 @@ void setup() {
 	tla.init(&leftRingPixels, &middleBarsPixels, &rightRingPixels);
 	a1.init(); a2.init(); a3.init();
 
-	Serial.println("helloo2");
-
 	/* Initialise the sensor */
 	if (!accel.begin())
 	{
@@ -180,8 +178,7 @@ void setup() {
 		Serial.println("Ooops, no ADXL345 detected ... Check your wiring!");
 		while (1);
 	}
-	Serial.println("helloo3");
-
+	//displaySetRange(ADXL345_RANGE_4_G);
 	displaySensorDetails();
 
 	/* Display additional settings (outside the scope of sensor_t) */
@@ -221,6 +218,15 @@ void loop() {
 	//digitalWrite(led, LOW);    
 	//delay(100);
 	//Serial.println(currentMode);
+	sensors_event_t event;
+	accel.getEvent(&event);
+
+	/* Display the results (acceleration is measured in m/s^2) */
+	Serial.print("X: "); Serial.print(event.acceleration.x); Serial.print("  ");
+	Serial.print("Y: "); Serial.print(event.acceleration.y); Serial.print("  ");
+	Serial.print("Z: "); Serial.print(event.acceleration.z); Serial.print("  "); Serial.println("m/s^2 ");
+	delay(500);
+
 
 	switch (currentMode)
 	{
@@ -233,25 +239,11 @@ void loop() {
 
 	case Mode_blinkLeft:
 		tla.step(0);
-		//for (i = 0; i<16; i++) { leftRingPixels.setPixelColor(i, blinkerColor); }
-		//leftRingPixels.show();
-		//delay(500);
-
-		//for (i = 0; i<16; i++) { leftRingPixels.setPixelColor(i, 0x000000); }
-		//leftRingPixels.show();
-		//delay(500);
 		break;
 
 
 	case Mode_blinkRight:
 		tla.step(1);
-		//for (i = 0; i<16; i++) { rightRingPixels.setPixelColor(i, blinkerColor); }
-		//rightRingPixels.show();
-		//delay(500);
-
-		//for (i = 0; i<16; i++) { rightRingPixels.setPixelColor(i, 0x000000); }
-		//rightRingPixels.show();
-		//delay(500);
 		break;
 
 	case Mode_breaking:
