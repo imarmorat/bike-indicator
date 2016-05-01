@@ -85,7 +85,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\Program Files (x86)\Arduino\hardware\teensy\avr\cores\teensy3;C:\Program Files (x86)\Arduino\hardware\teensy\avr\cores\teensy3\avr;C:\Program Files (x86)\Arduino\hardware\teensy\avr\cores\teensy3\util;C:\Program Files (x86)\Arduino\hardware\teensy\avr\cores\teensy3\utils;C:\Program Files (x86)\Arduino\hardware\teensy\avr\cores\teensy3\avr;C:\Users\Irwin\Documents\Arduino\bike-indicator;C:\Users\Irwin\Documents\Arduino\libraries\Adafruit_ADXL345-master;C:\Users\Irwin\Documents\Arduino\libraries\Adafruit_ADXL345-master\utility;C:\Program Files (x86)\Arduino\hardware\teensy\avr\libraries\Adafruit_NeoPixel;C:\Program Files (x86)\Arduino\hardware\teensy\avr\libraries\Adafruit_NeoPixel\utility;C:\Users\Irwin\Documents\Arduino\libraries\Adafruit_Sensor-master;C:\Users\Irwin\Documents\Arduino\libraries\Adafruit_Sensor-master\utility;C:\Program Files (x86)\Arduino\libraries;C:\Program Files (x86)\Arduino\hardware\teensy\avr\libraries;C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\Extensions\hxhfzcyi.csy\Micro Platforms\default\debuggers;C:\Users\Irwin\Documents\Arduino\libraries;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Program Files (x86)\Arduino\hardware\teensy\avr\cores\teensy3;C:\Program Files (x86)\Arduino\hardware\teensy\avr\cores\teensy3\avr;C:\Program Files (x86)\Arduino\hardware\teensy\avr\cores\teensy3\util;C:\Program Files (x86)\Arduino\hardware\teensy\avr\cores\teensy3\utils;C:\Program Files (x86)\Arduino\hardware\teensy\avr\cores\teensy3\avr;C:\Users\Irwin\Documents\Arduino\bike-indicator;C:\Users\Irwin\Documents\Arduino\libraries\Adafruit_ADXL345-master;C:\Users\Irwin\Documents\Arduino\libraries\Adafruit_ADXL345-master\utility;C:\Program Files (x86)\Arduino\hardware\teensy\avr\libraries\Adafruit_NeoPixel;C:\Program Files (x86)\Arduino\hardware\teensy\avr\libraries\Adafruit_NeoPixel\utility;C:\Users\Irwin\Documents\Arduino\libraries\Adafruit_Sensor-master;C:\Users\Irwin\Documents\Arduino\libraries\Adafruit_Sensor-master\utility;C:\Program Files (x86)\Arduino\libraries;C:\Program Files (x86)\Arduino\hardware\teensy\avr\libraries;C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\Extensions\hxhfzcyi.csy\Micro Platforms\default\debuggers;C:\Users\Irwin\Documents\Arduino\libraries;C:\Program Files (x86)\Arduino\hardware\hardware\include;C:\Program Files (x86)\Arduino\hardware\Arduino\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ForcedIncludeFiles>C:\Users\Irwin\Documents\Arduino\bike-indicator\__vm\.bike-indicator.vsarduino.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <PreprocessorDefinitions>__HARDWARE_MK20dx256__;__HARDWARE_MK20DX256__;__MK20DX256__;TEENSYDUINO=128;ARDUINO=10608;F_CPU=96000000;USB_SERIAL;LAYOUT_US_ENGLISH;__cplusplus=201103L;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
@@ -122,11 +122,14 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BreakingAnimation.h" />
+    <ClInclude Include="defs.h" />
     <ClInclude Include="SimpleAnimation.h" />
     <ClInclude Include="TurnAnimation.h" />
     <ClInclude Include="__vm\.bike-indicator.vsarduino.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="BreakingAnimation.cpp" />
     <ClCompile Include="SimpleAnimation.cpp" />
     <ClCompile Include="TurnAnimation.cpp" />
   </ItemGroup>

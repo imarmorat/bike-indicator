@@ -56,8 +56,11 @@ typedef void *__builtin_va_list;
 
 #define NEW_H
 #include <bike-indicator.ino>
+#include <BreakingAnimation.cpp>
+#include <BreakingAnimation.h>
 #include <SimpleAnimation.cpp>
 #include <SimpleAnimation.h>
 #include <TurnAnimation.cpp>
 #include <TurnAnimation.h>
+#include <defs.h>
 #endif

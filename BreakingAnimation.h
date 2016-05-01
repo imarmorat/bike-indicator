@@ -1,5 +1,5 @@
-#ifndef _ANIMATION_h
-#define _ANIMATION_h
+#ifndef _BREAKINGANIMATION_h
+#define _BREAKINGANIMATION_h
 
 #if defined(ARDUINO) && ARDUINO >= 100
 	#include "arduino.h"
@@ -9,19 +9,16 @@
 
 #include <Adafruit_NeoPixel.h>
 
-class SimpleAnimation
+class BreakingAnimation
 {
  protected:
-	 int _currentPosition = 0;
-	 int _nbLeds = 16;
 	 Adafruit_NeoPixel *_leftRing;
 	 Adafruit_NeoPixel *_rightRing;
 	 Adafruit_NeoPixel *_middleBar;
-	 void step(Adafruit_NeoPixel * pixels);
 
  public:
 	 void init(Adafruit_NeoPixel *leftRing, Adafruit_NeoPixel *middleBar, Adafruit_NeoPixel *rightRing);
-	 void step();
+	 void step(double breakingLevel);
 };
 
 #endif
