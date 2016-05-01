@@ -126,12 +126,14 @@
     <ClInclude Include="defs.h" />
     <ClInclude Include="SimpleAnimation.h" />
     <ClInclude Include="TurnAnimation.h" />
+    <ClInclude Include="WarningAnimation.h" />
     <ClInclude Include="__vm\.bike-indicator.vsarduino.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BreakingAnimation.cpp" />
     <ClCompile Include="SimpleAnimation.cpp" />
     <ClCompile Include="TurnAnimation.cpp" />
+    <ClCompile Include="WarningAnimation.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

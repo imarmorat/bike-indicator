@@ -16,6 +16,15 @@ void TurnAnimation::step(int direction)
 	float bstep = (be - bs) / 8;
 	float gstep = (ge - gs) / 8;
 
+
+	for (int i = 0; i<16; i++)
+	{
+		_leftRing->setPixelColor(i, _leftRing->Color(0,0,0)); 
+		_rightRing->setPixelColor(i, _rightRing->Color(0,0,0)); 
+	}
+	_leftRing->show();
+	_rightRing->show();
+
 	/*
 		Step 1
 	*/

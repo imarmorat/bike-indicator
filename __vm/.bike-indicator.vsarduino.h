@@ -62,5 +62,7 @@ typedef void *__builtin_va_list;
 #include <SimpleAnimation.h>
 #include <TurnAnimation.cpp>
 #include <TurnAnimation.h>
+#include <WarningAnimation.cpp>
+#include <WarningAnimation.h>
 #include <defs.h>
 #endif

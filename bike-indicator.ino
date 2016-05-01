@@ -1,3 +1,4 @@
+#include "WarningAnimation.h"
 #include "BreakingAnimation.h"
 #include "TurnAnimation.h"
 #include "SimpleAnimation.h"
@@ -27,6 +28,7 @@ uint32_t breakColor = leftRingPixels.Color(0, 255, 0); // green red blue format
 SimpleAnimation simpleAnim;
 TurnAnimation turnAnim;
 BreakingAnimation breakAnim;
+WarningAnimation warningAnim;
 
 Adafruit_ADXL345_Unified accel = Adafruit_ADXL345_Unified(12345);
 
@@ -93,7 +95,9 @@ void setup() {
 
 	turnAnim.init(&leftRingPixels, &middleBarsPixels, &rightRingPixels);
 	simpleAnim.init(&leftRingPixels, &middleBarsPixels, &rightRingPixels);
+	warningAnim.init(&leftRingPixels, &middleBarsPixels, &rightRingPixels);
 	breakAnim.init(&leftRingPixels, &middleBarsPixels, &rightRingPixels);
+	breakAnim.setLimits(2.0, 6.0);
 
 	/* Initialise the sensor */
 	if (!accel.begin())
@@ -156,8 +160,17 @@ void loop() {
 	switch (currentMode)
 	{
 	case Mode_none:
-		simpleAnim.step();
-		delay(500);
+		// when no special mode, play simple animation unless the g calculated is higher than the min limit
+		if (breakAnim.isHigherThanMinLimit(calcdG))
+		{
+			breakAnim.step(calcdG);
+			delay(100);
+		}
+		else
+		{
+			simpleAnim.step();
+			delay(200);
+		}
 		break;
 
 	case Mode_blinkLeft:
@@ -169,6 +182,7 @@ void loop() {
 		break;
 
 	case Mode_warning:
+		warningAnim.step();
 		break;
 
 	case Mode_manualBreaking:
