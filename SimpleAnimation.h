@@ -12,12 +12,14 @@
 class SimpleAnimation
 {
  protected:
-	 int _currentPosition = 0;
+	 int _lrCurrentPosition = 0;
+	 int _rrCurrentPosition = 0;
+	 int _mbCurrentPosition = 0;
 	 int _nbLeds = 16;
 	 Adafruit_NeoPixel *_leftRing;
 	 Adafruit_NeoPixel *_rightRing;
 	 Adafruit_NeoPixel *_middleBar;
-	 void step(Adafruit_NeoPixel * pixels);
+	 int step(Adafruit_NeoPixel * pixels, int position);
 
  public:
 	 void init(Adafruit_NeoPixel *leftRing, Adafruit_NeoPixel *middleBar, Adafruit_NeoPixel *rightRing);

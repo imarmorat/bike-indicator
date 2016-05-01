@@ -26,6 +26,7 @@ uint32_t breakColor = leftRingPixels.Color(0, 255, 0); // green red blue format
 
 SimpleAnimation simpleAnim;
 TurnAnimation turnAnim;
+BreakingAnimation breakAnim;
 
 Adafruit_ADXL345_Unified accel = Adafruit_ADXL345_Unified(12345);
 
@@ -36,6 +37,12 @@ void ChangeMode(Mode newMode)
 	if ((currentMode == Mode_blinkRight && newMode == Mode_blinkLeft) || (currentMode == Mode_blinkLeft && newMode == Mode_blinkRight))
 	{
 		currentMode = Mode_warning;
+		return;
+	}
+
+	if (currentMode == newMode)
+	{
+		currentMode = Mode_none;
 		return;
 	}
 
@@ -86,6 +93,7 @@ void setup() {
 
 	turnAnim.init(&leftRingPixels, &middleBarsPixels, &rightRingPixels);
 	simpleAnim.init(&leftRingPixels, &middleBarsPixels, &rightRingPixels);
+	breakAnim.init(&leftRingPixels, &middleBarsPixels, &rightRingPixels);
 
 	/* Initialise the sensor */
 	if (!accel.begin())
@@ -149,6 +157,7 @@ void loop() {
 	{
 	case Mode_none:
 		simpleAnim.step();
+		delay(500);
 		break;
 
 	case Mode_blinkLeft:

@@ -9,18 +9,18 @@ void SimpleAnimation::init(Adafruit_NeoPixel * leftRing, Adafruit_NeoPixel * mid
 
 void SimpleAnimation::step()
 {
-	step(_leftRing);
-	step(_middleBar);
-	step(_rightRing);
+	_lrCurrentPosition = step(_leftRing, _lrCurrentPosition);
+	_rrCurrentPosition = step(_rightRing, _rrCurrentPosition);
+	_mbCurrentPosition = step(_middleBar, _mbCurrentPosition);
 }
 
 
-void SimpleAnimation::step(Adafruit_NeoPixel * pixels)
+int SimpleAnimation::step(Adafruit_NeoPixel * pixels, int position)
 {
-	int previous = _currentPosition - 1 < 0 ? _nbLeds - 1 : _currentPosition - 1;
+	int previous = position - 1 < 0 ? _nbLeds - 1 : position - 1;
 	pixels->setPixelColor(previous, pixels->Color(0, 0, 0));
-	pixels->setPixelColor(_currentPosition, pixels->Color(255, 255, 255));
-	_currentPosition = _currentPosition + 1 >= _nbLeds ? 0 : _currentPosition + 1;
+	pixels->setPixelColor(position, pixels->Color(255, 255, 255));
 	pixels->show();
+	return position + 1 >= _nbLeds ? 0 : position + 1;
 }
 
