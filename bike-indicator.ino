@@ -1,10 +1,10 @@
+#include "AccelAnalysis.h"
 #include "WarningAnimation.h"
 #include "BreakingAnimation.h"
 #include "TurnAnimation.h"
 #include "SimpleAnimation.h"
 #include <Adafruit_NeoPixel.h>
 #include <Adafruit_Sensor.h>
-#include <Adafruit_ADXL345_U.h>
 #include "defs.h"
 
 // https://github.com/adafruit/Adafruit_ADXL345
@@ -31,6 +31,7 @@ BreakingAnimation breakAnim;
 WarningAnimation warningAnim;
 
 Adafruit_ADXL345_Unified accel = Adafruit_ADXL345_Unified(12345);
+AccelAnalysis accelAnalysis;
 
 Mode currentMode = Mode_none;
 
@@ -49,22 +50,6 @@ void ChangeMode(Mode newMode)
 	}
 
 	currentMode = newMode;
-}
-
-void displaySensorDetails(void)
-{
-	sensor_t sensor;
-	accel.getSensor(&sensor);
-	Serial.println("------------------------------------");
-	Serial.print("Sensor:       "); Serial.println(sensor.name);
-	Serial.print("Driver Ver:   "); Serial.println(sensor.version);
-	Serial.print("Unique ID:    "); Serial.println(sensor.sensor_id);
-	Serial.print("Max Value:    "); Serial.print(sensor.max_value); Serial.println(" m/s^2");
-	Serial.print("Min Value:    "); Serial.print(sensor.min_value); Serial.println(" m/s^2");
-	Serial.print("Resolution:   "); Serial.print(sensor.resolution); Serial.println(" m/s^2");
-	Serial.println("------------------------------------");
-	Serial.println("");
-	delay(500);
 }
 
 void setup() {
@@ -99,6 +84,8 @@ void setup() {
 	breakAnim.init(&leftRingPixels, &middleBarsPixels, &rightRingPixels);
 	breakAnim.setLimits(2.0, 6.0);
 
+	accelAnalysis.init(&accel, 0, 0.3);
+
 	/* Initialise the sensor */
 	if (!accel.begin())
 	{
@@ -106,8 +93,6 @@ void setup() {
 		Serial.println("Ooops, no ADXL345 detected ... Check your wiring!");
 		while (1);
 	}
-
-	displaySensorDetails();
 }
 
 void breakButtonActivated()
@@ -136,34 +121,17 @@ void turnRightButtonActivated()
 
 // the loop routine runs over and over again forever:
 void loop() {
-	uint8_t  i;
-	//digitalWrite(led, HIGH);
-	//delay(100);              
-	//digitalWrite(led, LOW);    
-	//delay(100);
-
-	sensors_event_t event;
-	accel.getEvent(&event);
-	float calcdG = sqrt(
-		event.acceleration.x*event.acceleration.x +
-		event.acceleration.y*event.acceleration.y +
-		event.acceleration.z*event.acceleration.z -
-		SENSORS_GRAVITY_STANDARD * SENSORS_GRAVITY_STANDARD
-	);
-
-	/* Display the results (acceleration is measured in m/s^2) */
-	Serial.print("X: "); Serial.print(event.acceleration.x); Serial.print("  ");
-	Serial.print("Y: "); Serial.print(event.acceleration.y); Serial.print("  ");
-	Serial.print("Z: "); Serial.print(event.acceleration.z); Serial.print(" -- "); 
-	Serial.print("G: "); Serial.print(calcdG); Serial.println(" g");
+	accelAnalysis.update();
+	double latestAccel = accelAnalysis.getLatest();
+	Serial.print(latestAccel); Serial.println(" ");
 
 	switch (currentMode)
 	{
 	case Mode_none:
 		// when no special mode, play simple animation unless the g calculated is higher than the min limit
-		if (breakAnim.isHigherThanMinLimit(calcdG))
+		if (breakAnim.isHigherThanMinLimit(latestAccel))
 		{
-			breakAnim.step(calcdG);
+			breakAnim.step(latestAccel);
 			delay(100);
 		}
 		else
@@ -186,7 +154,7 @@ void loop() {
 		break;
 
 	case Mode_manualBreaking:
-		for (i = 0; i<16; i++)
+		for (int i = 0; i<16; i++)
 		{
 			leftRingPixels.setPixelColor(i, breakColor);
 			rightRingPixels.setPixelColor(i, breakColor);
