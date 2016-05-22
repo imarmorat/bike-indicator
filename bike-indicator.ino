@@ -1,3 +1,4 @@
+#include "LiPoFuel.h"
 #include "AccelAnalysis.h"
 #include "WarningAnimation.h"
 #include "BreakingAnimation.h"
@@ -11,9 +12,9 @@
 // https://github.com/adafruit/Adafruit_Sensor
 
 int led = 13;
-#define LEFTRING_PIN 1
-#define RIGHTRING_PIN 0
-#define BAR_PIN 2
+#define LEFTRING_PIN 0
+#define RIGHTRING_PIN 2
+#define BAR_PIN 1
 #define BREAKING_BUTTON_PIN 4
 #define TURNLEFT_BUTTON_PIN 5
 #define TURNRIGHT_BUTTON_PIN 6
@@ -32,6 +33,10 @@ WarningAnimation warningAnim;
 
 Adafruit_ADXL345_Unified accel = Adafruit_ADXL345_Unified(12345);
 AccelAnalysis accelAnalysis;
+volatile boolean alert = false;
+void lowPower() { alert = true; }
+LiFuelGauge gauge(MAX17043, 0, lowPower);
+bool useAccel = true;
 
 Mode currentMode = Mode_none;
 
@@ -53,19 +58,20 @@ void ChangeMode(Mode newMode)
 }
 
 void setup() {
+	pinMode(led, OUTPUT);
+	digitalWrite(led, true);
 	Serial.begin(38400);
 	Serial.println("helloo");
-	pinMode(led, OUTPUT);
 	pinMode(BREAKING_BUTTON_PIN, INPUT_PULLUP);
 	pinMode(TURNLEFT_BUTTON_PIN, INPUT_PULLUP);
 	pinMode(TURNRIGHT_BUTTON_PIN, INPUT_PULLUP);
 
 	leftRingPixels.begin();
-	leftRingPixels.setBrightness(60); 
+	leftRingPixels.setBrightness(100); 
 	rightRingPixels.begin();
-	rightRingPixels.setBrightness(60); 
+	rightRingPixels.setBrightness(100); 
 	middleBarsPixels.begin();
-	middleBarsPixels.setBrightness(60);
+	middleBarsPixels.setBrightness(100);
 
 	leftRingPixels.clear();
 	rightRingPixels.clear();
@@ -85,14 +91,23 @@ void setup() {
 	breakAnim.setLimits(2.0, 6.0);
 
 	accelAnalysis.init(&accel, 0, 0.3);
-
+	digitalWrite(led, false);
 	/* Initialise the sensor */
-	if (!accel.begin())
+	if (useAccel)
 	{
-		/* There was a problem detecting the ADXL345 ... check your connections */
-		Serial.println("Ooops, no ADXL345 detected ... Check your wiring!");
-		while (1);
+		if (!accel.begin())
+		{
+			/* There was a problem detecting the ADXL345 ... check your connections */
+			Serial.println("Ooops, no ADXL345 detected ... Check your wiring!");
+			while (1);
+		}
+		else
+			Serial.println("ADX345 init'd ok");
 	}
+
+	gauge.reset();
+	gauge.setAlertThreshold(10);
+	Serial.println(String("Alert Threshold is set to ") + gauge.getAlertThreshold() + '%');
 }
 
 void breakButtonActivated()
@@ -121,10 +136,35 @@ void turnRightButtonActivated()
 
 // the loop routine runs over and over again forever:
 void loop() {
-	accelAnalysis.update();
-	double latestAccel = accelAnalysis.getLatest();
-	Serial.print(latestAccel); Serial.println(" ");
 
+	Serial.print("Charge: ");
+	Serial.print(gauge.getSOC());  // Gets the battery's state of charge
+	Serial.print("%, VBattery: ");
+	Serial.print(gauge.getVoltage());  // Gets the battery voltage
+	Serial.println('V');
+
+	if (alert)
+	{
+		Serial.println("Beware, Low Power!");
+		Serial.println("Stopping");
+		gauge.clearAlertInterrupt();  // Resets the ALRT pin
+		alert = false;
+		gauge.sleep();  // Forces the MAX17043 into sleep mode
+		while (true);
+	}
+
+	digitalWrite(led, true);
+	double latestAccel = 0.0;
+	if (useAccel)
+	{
+		accelAnalysis.update();
+		latestAccel = accelAnalysis.getLatest();
+		Serial.print(latestAccel); Serial.println(" ");
+	}
+
+	Serial.println(".");
+
+	currentMode = Mode_blinkLeft;
 	switch (currentMode)
 	{
 	case Mode_none:
@@ -166,5 +206,5 @@ void loop() {
 		break;
 	}
 
-
+	digitalWrite(led, false);
 }

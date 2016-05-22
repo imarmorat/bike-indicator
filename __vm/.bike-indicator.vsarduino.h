@@ -56,11 +56,22 @@ typedef void *__builtin_va_list;
 //#define noInterrupts() __disable_irq()
 
 #define NEW_H
+
+void lowPower();
+void ChangeMode(Mode newMode);
+//
+void breakButtonActivated();
+void turnLeftButtonActivated();
+void turnRightButtonActivated();
+//
+
 #include <bike-indicator.ino>
 #include <AccelAnalysis.cpp>
 #include <AccelAnalysis.h>
 #include <BreakingAnimation.cpp>
 #include <BreakingAnimation.h>
+#include <LiPoFuel.cpp>
+#include <LiPoFuel.h>
 #include <SimpleAnimation.cpp>
 #include <SimpleAnimation.h>
 #include <TurnAnimation.cpp>

@@ -43,7 +43,7 @@ void TurnAnimation::step(int direction)
 		}
 
 		_middleBar->show();
-		delay(50);
+		delay(25);
 		rs += rstep; gs += gstep; bs += bstep;
 	}
 
@@ -64,7 +64,8 @@ void TurnAnimation::step(int direction)
 	case 0:_leftRing->show(); break;
 	case 1:_rightRing->show(); break;
 	}
-	
+	delay(500);
+
 
 	/*
 		Step 3
@@ -84,10 +85,10 @@ void TurnAnimation::step(int direction)
 		}
 
 		_middleBar->show();
-		delay(50);
+		delay(25);
 		rs += rstep; gs += gstep; bs += bstep;
 	}
-	delay(1000);
+	delay(500);
 
 	reset();
 }
