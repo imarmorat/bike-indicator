@@ -12,7 +12,6 @@
 #define _VSARDUINO_H_
 #define __HARDWARE_MK20dx256__
 #define __HARDWARE_MK20DX256__
-#define _VMDEBUG 1
 #define __MK20DX256__
 #define TEENSYDUINO 128
 #define ARDUINO 10608
@@ -66,12 +65,16 @@ void turnRightButtonActivated();
 //
 
 #include <bike-indicator.ino>
+#include <ADXL345.cpp>
+#include <ADXL345.h>
 #include <AccelAnalysis.cpp>
 #include <AccelAnalysis.h>
 #include <BreakingAnimation.cpp>
 #include <BreakingAnimation.h>
 #include <LiPoFuel.cpp>
 #include <LiPoFuel.h>
+#include <SSD1306.cpp>
+#include <SSD1306.h>
 #include <SimpleAnimation.cpp>
 #include <SimpleAnimation.h>
 #include <TurnAnimation.cpp>
@@ -79,4 +82,6 @@ void turnRightButtonActivated();
 #include <WarningAnimation.cpp>
 #include <WarningAnimation.h>
 #include <defs.h>
+#include <i2c_t3.cpp>
+#include <i2c_t3.h>
 #endif

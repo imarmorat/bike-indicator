@@ -1,3 +1,4 @@
+
 #include "LiPoFuel.h"
 #include "AccelAnalysis.h"
 #include "WarningAnimation.h"
@@ -6,6 +7,9 @@
 #include "SimpleAnimation.h"
 #include <Adafruit_NeoPixel.h>
 #include <Adafruit_Sensor.h>
+#include <gfxfont.h>
+#include <Adafruit_GFX.h>
+#include "SSD1306.h"
 #include "defs.h"
 
 // https://github.com/adafruit/Adafruit_ADXL345
@@ -31,6 +35,7 @@ TurnAnimation turnAnim;
 BreakingAnimation breakAnim;
 WarningAnimation warningAnim;
 
+Adafruit_SSD1306 display(6);
 Adafruit_ADXL345_Unified accel = Adafruit_ADXL345_Unified(12345);
 AccelAnalysis accelAnalysis;
 volatile boolean alert = false;
@@ -57,11 +62,33 @@ void ChangeMode(Mode newMode)
 	currentMode = newMode;
 }
 
+//void print_scan_status(uint8_t target, bool all)
+//{
+//	switch (Wire1.status())
+//	{
+//	case I2C_WAITING:
+//		Serial.print("Addr 0x");
+//		Serial.print(target, HEX);
+//		Serial.print(" ACK\n");
+//		break;
+//	case I2C_ADDR_NAK:
+//		if (all)
+//		{
+//			Serial.print("Addr 0x");
+//			Serial.print(target, HEX);
+//			Serial.print("\n");
+//		}
+//		break;
+//	default:
+//		break;
+//	}
+//}
+
 void setup() {
 	pinMode(led, OUTPUT);
-	digitalWrite(led, true);
 	Serial.begin(38400);
 	Serial.println("helloo");
+
 	pinMode(BREAKING_BUTTON_PIN, INPUT_PULLUP);
 	pinMode(TURNLEFT_BUTTON_PIN, INPUT_PULLUP);
 	pinMode(TURNRIGHT_BUTTON_PIN, INPUT_PULLUP);
@@ -89,6 +116,27 @@ void setup() {
 	warningAnim.init(&leftRingPixels, &middleBarsPixels, &rightRingPixels);
 	breakAnim.init(&leftRingPixels, &middleBarsPixels, &rightRingPixels);
 	breakAnim.setLimits(2.0, 6.0);
+
+	//Serial.print("---------------------------------------------------\n");
+	//Serial.print("Starting scan...\n");
+	//Wire1.begin();
+	//uint8_t target; // slave addr
+	//bool all;
+	//for (target = 1; target <= 0x7F; target++) // sweep addr, skip general call
+	//{
+	//	Wire1.beginTransmission(target);       // slave addr
+	//	Wire1.endTransmission();               // no data, just addr
+	//	print_scan_status(target, true);
+	//}
+	//Serial.print("---------------------------------------------------\n");
+	//digitalWrite(led, true);
+
+	//
+	// Displpay init
+	display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
+	delay(2000);
+	display.clearDisplay();
+
 
 	accelAnalysis.init(&accel, 0, 0.3);
 	digitalWrite(led, false);
@@ -137,11 +185,21 @@ void turnRightButtonActivated()
 // the loop routine runs over and over again forever:
 void loop() {
 
+	display.setCursor(0, 0);
+	display.setTextColor(WHITE, BLACK);
+	display.setTextSize(1);
 	Serial.print("Charge: ");
 	Serial.print(gauge.getSOC());  // Gets the battery's state of charge
 	Serial.print("%, VBattery: ");
 	Serial.print(gauge.getVoltage());  // Gets the battery voltage
 	Serial.println('V');
+
+	display.print("Charge: ");
+	display.println(gauge.getSOC());  // Gets the battery's state of charge
+	display.print("%, VBattery: ");
+	display.print(gauge.getVoltage());  // Gets the battery voltage
+	display.println('V');
+	display.display();
 
 	if (alert)
 	{

@@ -7,7 +7,7 @@
 	#include "WProgram.h"
 #endif
 
-#include <Adafruit_ADXL345_U.h>
+#include "ADXL345.h"
 
 class AccelAnalysis
 {

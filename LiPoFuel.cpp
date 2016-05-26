@@ -25,7 +25,7 @@ LiFuelGauge::LiFuelGauge(gaugeType ic) : _ic(ic), _f(NULL) { Wire.begin(); }
 LiFuelGauge::LiFuelGauge(gaugeType ic, uint8_t intr, func f) : _ic(ic), _f(f)
 {
 	attachInterrupt(intr, f, FALLING);
-	Wire.begin();
+	//Wire.begin();
 }
 
 // Returns a measurement of the voltage of the connected LiIon Polymer battery

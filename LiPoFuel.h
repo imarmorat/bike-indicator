@@ -19,7 +19,7 @@
 #define LiFuelGauge_h
 
 #include <Arduino.h>
-#include <Wire.h>
+#include "i2c_t3.h"
 
 // MAX1704X register addresses
 const uint8_t MAX1704X_ADDR = 0x36;
