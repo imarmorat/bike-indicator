@@ -1,7 +1,5 @@
 #include "UserControlManager.h"
 #include "ADS1x15.h"
-//#include <RingBufferDMA.h>
-//#include <RingBuffer.h>
 #include "LiPoFuel.h"
 #include "AccelAnalysis.h"
 #include "WarningAnimation.h"
@@ -40,8 +38,8 @@ WarningAnimation warningAnim;
 
 Adafruit_SSD1306 display(6);
 Adafruit_ADXL345_Unified accel = Adafruit_ADXL345_Unified(12345);
-Adafruit_ADS1015 ads;
-UserControlManagerClass UserControlManager;
+Adafruit_ADS1115 ads;
+UserControlManagerClass userControlManager;
 
 AccelAnalysis accelAnalysis;
 volatile boolean alert = false;
@@ -142,7 +140,7 @@ void setup() {
 	display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
 	delay(2000);
 	display.clearDisplay();
-
+	display.print("hello!");
 
 	accelAnalysis.init(&accel, 0, 0.3);
 	digitalWrite(led, false);
@@ -163,7 +161,7 @@ void setup() {
 	gauge.setAlertThreshold(10);
 	Serial.println(String("Alert Threshold is set to ") + gauge.getAlertThreshold() + '%');
 
-	ads.begin();
+	userControlManager.init(&ads);
 }
 
 void breakButtonActivated()
@@ -193,28 +191,50 @@ void turnRightButtonActivated()
 // the loop routine runs over and over again forever:
 void loop() {
 
-	int16_t adc0, adc1, adc2, adc3;
-
-	adc0 = ads.readADC_SingleEnded(0);
-	adc1 = ads.readADC_SingleEnded(1);
-	adc2 = ads.readADC_SingleEnded(2);
-	adc3 = ads.readADC_SingleEnded(3);
-
+	display.clearDisplay();
 	display.setCursor(0, 0);
 	display.setTextColor(WHITE, BLACK);
 	display.setTextSize(1);
-	Serial.print("Charge: ");
-	Serial.print(gauge.getSOC());  // Gets the battery's state of charge
-	Serial.print("%, VBattery: ");
-	Serial.print(gauge.getVoltage());  // Gets the battery voltage
-	Serial.println('V');
 
-	display.print("Charge: ");
-	display.println(gauge.getSOC());  // Gets the battery's state of charge
-	display.print("%, VBattery: ");
-	display.print(gauge.getVoltage());  // Gets the battery voltage
-	display.println('V');
-	display.display();
+	bool doDisplayJoystickInfo = true;
+	if (doDisplayJoystickInfo)
+	{
+		int16_t adc0, adc1, adc2, adc3;
+
+		adc0 = ads.readADC_SingleEnded(0);
+		adc1 = ads.readADC_SingleEnded(1);
+		adc2 = ads.readADC_SingleEnded(2);
+		adc3 = ads.readADC_SingleEnded(3);
+
+		display.print("Adc0: "); display.println(adc0);
+		display.print("Adc1: "); display.println(adc1);
+		display.print("Adc2: "); display.println(adc2);
+		display.print("Adc3: "); display.println(adc3);
+
+		Serial.print("Adc0: "); Serial.println(adc0);
+		Serial.print("Adc1: "); Serial.println(adc1);
+		Serial.print("Adc2: "); Serial.println(adc2);
+		Serial.print("Adc3: "); Serial.println(adc3);
+		display.display();
+	}
+
+
+	bool doDisplayBatteryInfo = false;
+	if (doDisplayBatteryInfo)
+	{
+		Serial.print("Charge: ");
+		Serial.print(gauge.getSOC());  // Gets the battery's state of charge
+		Serial.print("%, VBattery: ");
+		Serial.print(gauge.getVoltage());  // Gets the battery voltage
+		Serial.println('V');
+
+		display.print("Charge: ");
+		display.println(gauge.getSOC());  // Gets the battery's state of charge
+		display.print("%, VBattery: ");
+		display.print(gauge.getVoltage());  // Gets the battery voltage
+		display.println('V');
+		display.display();
+	}
 
 	if (alert)
 	{
