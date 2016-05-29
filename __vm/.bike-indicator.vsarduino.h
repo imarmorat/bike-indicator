@@ -65,6 +65,8 @@ void turnRightButtonActivated();
 //
 
 #include <bike-indicator.ino>
+#include <ADS1x15.cpp>
+#include <ADS1x15.h>
 #include <ADXL345.cpp>
 #include <ADXL345.h>
 #include <AccelAnalysis.cpp>
@@ -79,6 +81,8 @@ void turnRightButtonActivated();
 #include <SimpleAnimation.h>
 #include <TurnAnimation.cpp>
 #include <TurnAnimation.h>
+#include <UserControlManager.cpp>
+#include <UserControlManager.h>
 #include <WarningAnimation.cpp>
 #include <WarningAnimation.h>
 #include <defs.h>

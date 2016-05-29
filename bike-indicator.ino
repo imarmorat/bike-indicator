@@ -1,4 +1,7 @@
-
+#include "UserControlManager.h"
+#include "ADS1x15.h"
+//#include <RingBufferDMA.h>
+//#include <RingBuffer.h>
 #include "LiPoFuel.h"
 #include "AccelAnalysis.h"
 #include "WarningAnimation.h"
@@ -37,6 +40,9 @@ WarningAnimation warningAnim;
 
 Adafruit_SSD1306 display(6);
 Adafruit_ADXL345_Unified accel = Adafruit_ADXL345_Unified(12345);
+Adafruit_ADS1015 ads;
+UserControlManagerClass UserControlManager;
+
 AccelAnalysis accelAnalysis;
 volatile boolean alert = false;
 void lowPower() { alert = true; }
@@ -156,6 +162,8 @@ void setup() {
 	gauge.reset();
 	gauge.setAlertThreshold(10);
 	Serial.println(String("Alert Threshold is set to ") + gauge.getAlertThreshold() + '%');
+
+	ads.begin();
 }
 
 void breakButtonActivated()
@@ -184,6 +192,13 @@ void turnRightButtonActivated()
 
 // the loop routine runs over and over again forever:
 void loop() {
+
+	int16_t adc0, adc1, adc2, adc3;
+
+	adc0 = ads.readADC_SingleEnded(0);
+	adc1 = ads.readADC_SingleEnded(1);
+	adc2 = ads.readADC_SingleEnded(2);
+	adc3 = ads.readADC_SingleEnded(3);
 
 	display.setCursor(0, 0);
 	display.setTextColor(WHITE, BLACK);
