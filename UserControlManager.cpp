@@ -1,5 +1,9 @@
 #include "UserControlManager.h"
 
+#define HIGH_THRESHOLD	24000
+#define LOW_THRESHOLD	150
+#define CLICK_THRESHOLD 2
+
 void UserControlManagerClass::init(Adafruit_ADS1115 * ads)
 {
 	_ads = ads;
@@ -13,7 +17,21 @@ UserCtrl_Input UserControlManagerClass::getInput()
 	adc0 = _ads->readADC_SingleEnded(0);
 	adc1 = _ads->readADC_SingleEnded(1);
 	adc2 = _ads->readADC_SingleEnded(2);
-	adc3 = _ads->readADC_SingleEnded(3);
+
+	if (adc0 >= HIGH_THRESHOLD)
+		return UserCtrl_right;
+
+	if (adc0 <= LOW_THRESHOLD)
+		return UserCtrl_left;
+
+	if (adc1 >= HIGH_THRESHOLD)
+		return UserCtrl_top;
+
+	if (adc1 <= LOW_THRESHOLD)
+		return UserCtrl_bottom;
+
+	if (adc2 <= CLICK_THRESHOLD)
+		return UserCtrl_click;
 
 	return UserCtrl_none;
 }

@@ -1,3 +1,5 @@
+#include "Helpers.h"
+#include "Utils.h"
 #include "UserControlManager.h"
 #include "ADS1x15.h"
 #include "LiPoFuel.h"
@@ -66,28 +68,6 @@ void ChangeMode(Mode newMode)
 	currentMode = newMode;
 }
 
-//void print_scan_status(uint8_t target, bool all)
-//{
-//	switch (Wire1.status())
-//	{
-//	case I2C_WAITING:
-//		Serial.print("Addr 0x");
-//		Serial.print(target, HEX);
-//		Serial.print(" ACK\n");
-//		break;
-//	case I2C_ADDR_NAK:
-//		if (all)
-//		{
-//			Serial.print("Addr 0x");
-//			Serial.print(target, HEX);
-//			Serial.print("\n");
-//		}
-//		break;
-//	default:
-//		break;
-//	}
-//}
-
 void setup() {
 	pinMode(led, OUTPUT);
 	Serial.begin(38400);
@@ -121,18 +101,7 @@ void setup() {
 	breakAnim.init(&leftRingPixels, &middleBarsPixels, &rightRingPixels);
 	breakAnim.setLimits(2.0, 6.0);
 
-	//Serial.print("---------------------------------------------------\n");
-	//Serial.print("Starting scan...\n");
-	//Wire1.begin();
-	//uint8_t target; // slave addr
-	//bool all;
-	//for (target = 1; target <= 0x7F; target++) // sweep addr, skip general call
-	//{
-	//	Wire1.beginTransmission(target);       // slave addr
-	//	Wire1.endTransmission();               // no data, just addr
-	//	print_scan_status(target, true);
-	//}
-	//Serial.print("---------------------------------------------------\n");
+
 	//digitalWrite(led, true);
 
 	//
@@ -199,22 +168,16 @@ void loop() {
 	bool doDisplayJoystickInfo = true;
 	if (doDisplayJoystickInfo)
 	{
-		int16_t adc0, adc1, adc2, adc3;
-
-		adc0 = ads.readADC_SingleEnded(0);
-		adc1 = ads.readADC_SingleEnded(1);
-		adc2 = ads.readADC_SingleEnded(2);
-		adc3 = ads.readADC_SingleEnded(3);
-
-		display.print("Adc0: "); display.println(adc0);
-		display.print("Adc1: "); display.println(adc1);
-		display.print("Adc2: "); display.println(adc2);
-		display.print("Adc3: "); display.println(adc3);
-
-		Serial.print("Adc0: "); Serial.println(adc0);
-		Serial.print("Adc1: "); Serial.println(adc1);
-		Serial.print("Adc2: "); Serial.println(adc2);
-		Serial.print("Adc3: "); Serial.println(adc3);
+		UserCtrl_Input input = userControlManager.getInput();
+		switch (input)
+		{
+		case UserCtrl_left: display.println("Left"); break;
+		case UserCtrl_right: display.println("Right"); break;
+		case UserCtrl_top: display.println("Top"); break;
+		case UserCtrl_bottom: display.println("Bottom"); break;
+		case UserCtrl_click: display.println("Click"); break;
+		default: display.println("none");
+		}
 		display.display();
 	}
 

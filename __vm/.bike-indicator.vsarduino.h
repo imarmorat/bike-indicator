@@ -73,6 +73,8 @@ void turnRightButtonActivated();
 #include <AccelAnalysis.h>
 #include <BreakingAnimation.cpp>
 #include <BreakingAnimation.h>
+#include <Helpers.cpp>
+#include <Helpers.h>
 #include <LiPoFuel.cpp>
 #include <LiPoFuel.h>
 #include <SSD1306.cpp>
