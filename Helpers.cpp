@@ -1,8 +1,6 @@
 #include "Helpers.h"
 #include "i2c_t3.h"
 
-HelpersClass Helpers;
-
 void Helpers::print_scan_status(uint8_t target, bool all)
 {
 	switch (Wire1.status())
@@ -25,7 +23,7 @@ void Helpers::print_scan_status(uint8_t target, bool all)
 	}
 }
 
-void Helpers::utils_scanI2C(Wire * wire)
+void Helpers::utils_scanI2C(i2c_t3 * wire)
 {
 	Serial.print("---------------------------------------------------\n");
 	Serial.print("Starting scan...\n");
@@ -40,5 +38,3 @@ void Helpers::utils_scanI2C(Wire * wire)
 	}
 	Serial.print("---------------------------------------------------\n");
 }
-
-

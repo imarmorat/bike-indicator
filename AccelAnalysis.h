@@ -16,9 +16,15 @@ class AccelAnalysis
 	 double _multiplier;
 	 double _latest;
 	 Adafruit_ADXL345_Unified * _adx345;
+	 double _min;
+	 double _max;
+
  public:
-	void init(Adafruit_ADXL345_Unified * adx345, uint32_t frequency, double multiplier);
+	void init(Adafruit_ADXL345_Unified * adx345, uint32_t frequency, double multiplier, double min, double max);
 	void update();
+	void setLimits(double min, double max);
+	bool isWithinLimit(double val);
+	bool isHigherThanMinLimit(double val);
 	double getLatest();
 };
 

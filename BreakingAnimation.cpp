@@ -7,29 +7,15 @@ void BreakingAnimation::init(Adafruit_NeoPixel * leftRing, Adafruit_NeoPixel * m
 	_middleBar = middleBar;
 }
 
-void BreakingAnimation::setLimits(double min, double max)
-{
-	_min = min; 
-	_max = max;
-}
-
-bool BreakingAnimation::isWithinLimit(double val)
-{
-	return val >= _min && val <= _max;
-}
-
-bool BreakingAnimation::isHigherThanMinLimit(double val)
-{
-	return val > _min;
-}
-
 void BreakingAnimation::step(double breakingLevel)
 {
-	double percent = breakingLevel > _max ?
-		1.0 :
-		breakingLevel < _min ? 0.0 : (breakingLevel - _min) / (_max - _min);
-	Serial.println(percent);
-	int nbSteps = (int)(8.0 * percent); // 8leds = 100%
+	//double percent = breakingLevel > _max ?
+	//	1.0 :
+	//	breakingLevel < _min ? 0.0 : (breakingLevel - _min) / (_max - _min);
+	//Serial.println(percent);
+	double percent = 1.0;
+	int nbSteps = (int)(8.0); // 8leds = 100%
+	//int nbSteps = (int)(8.0 * percent); // 8leds = 100%
 
 	for (int i = 0; i < nbSteps; i++)
 	{

@@ -9,17 +9,17 @@
 	#include "WProgram.h"
 #endif
 
-class HelpersClass
+#include "i2c_t3.h"
+
+class Helpers
 {
  protected:
 
 
  public:
-	 static void utils_scanI2C(Wire * wire);
+	 static void utils_scanI2C(i2c_t3 * wire);
 	 static void print_scan_status(uint8_t target, bool all);
 };
-
-extern HelpersClass Helpers;
 
 #endif
 

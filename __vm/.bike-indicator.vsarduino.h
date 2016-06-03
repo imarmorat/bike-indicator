@@ -58,10 +58,14 @@ typedef void *__builtin_va_list;
 
 void lowPower();
 void ChangeMode(Mode newMode);
+void setupLeds(Adafruit_NeoPixel * leds);
+void setupDisplay(Adafruit_SSD1306 * display);
+void setupLipoGauge(LiFuelGauge * gauge);
+void setupAccelerator(Adafruit_ADXL345_Unified * accelerator);
+void setupAnims();
+void setupUserControls(Adafruit_ADS1115 * ads1115);
 //
-void breakButtonActivated();
-void turnLeftButtonActivated();
-void turnRightButtonActivated();
+void updateDisplay();
 //
 
 #include <bike-indicator.ino>

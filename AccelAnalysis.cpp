@@ -1,11 +1,13 @@
 #include "AccelAnalysis.h"
 
-void AccelAnalysis::init(Adafruit_ADXL345_Unified * adx345, uint32_t frequency, double multiplier)
+void AccelAnalysis::init(Adafruit_ADXL345_Unified * adx345, uint32_t frequency, double multiplier, double min, double max)
 {
 	_adx345 = adx345;
 	_frequency = frequency;
 	_multiplier = multiplier;
 	_latest = 0;
+	_min = min;
+	_max = max;
 }
 
 void AccelAnalysis::update()
@@ -29,6 +31,23 @@ void AccelAnalysis::update()
 	double sample = _adx345->getX() * ADXL345_MG2G_MULTIPLIER;
 	_latest = (1 - _multiplier) * _latest + _multiplier * sample;
 }
+
+void AccelAnalysis::setLimits(double min, double max)
+{
+	_min = min;
+	_max = max;
+}
+
+bool AccelAnalysis::isWithinLimit(double val)
+{
+	return val >= _min && val <= _max;
+}
+
+bool AccelAnalysis::isHigherThanMinLimit(double val)
+{
+	return val > _min;
+}
+
 
 double AccelAnalysis::getLatest()
 {

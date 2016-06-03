@@ -1,5 +1,4 @@
 #include "Helpers.h"
-#include "Utils.h"
 #include "UserControlManager.h"
 #include "ADS1x15.h"
 #include "LiPoFuel.h"
@@ -50,6 +49,7 @@ LiFuelGauge gauge(MAX17043, 0, lowPower);
 bool useAccel = true;
 
 Mode currentMode = Mode_none;
+UserCtrl_Input latestInput = UserCtrl_none;
 
 void ChangeMode(Mode newMode)
 {
@@ -68,137 +68,176 @@ void ChangeMode(Mode newMode)
 	currentMode = newMode;
 }
 
-void setup() {
-	pinMode(led, OUTPUT);
-	Serial.begin(38400);
-	Serial.println("helloo");
+void setupLeds(Adafruit_NeoPixel * leds)
+{
+	leds->begin();
+	leds->setBrightness(100);
+	leds->clear();
+	leds->show();
+	Serial.println("[init::leds] init ok");
+}
 
-	pinMode(BREAKING_BUTTON_PIN, INPUT_PULLUP);
-	pinMode(TURNLEFT_BUTTON_PIN, INPUT_PULLUP);
-	pinMode(TURNRIGHT_BUTTON_PIN, INPUT_PULLUP);
+void setupDisplay(Adafruit_SSD1306 * display)
+{
+	display->begin(SSD1306_SWITCHCAPVCC, 0x3C);
+	delay(2000);
+	display->clearDisplay();
+	display->setCursor(0, 0);
+	display->setTextColor(WHITE, BLACK);
+	display->setTextSize(1);
+	Serial.println("[init::display] init ok");
+}
 
-	leftRingPixels.begin();
-	leftRingPixels.setBrightness(100); 
-	rightRingPixels.begin();
-	rightRingPixels.setBrightness(100); 
-	middleBarsPixels.begin();
-	middleBarsPixels.setBrightness(100);
+void setupLipoGauge(LiFuelGauge * gauge)
+{
+	gauge->reset();
+	gauge->setAlertThreshold(10);
+	Serial.println(String("[init::gauge] Alert Threshold is set to ") + gauge->getAlertThreshold() + '%');
+	Serial.print("[init::gauge] Charge: ");
+	Serial.print(gauge->getSOC());  // Gets the battery's state of charge
+	Serial.print("%, VBatt: ");
+	Serial.print(gauge->getVoltage());  // Gets the battery voltage
+	Serial.println('V');
+}
 
-	leftRingPixels.clear();
-	rightRingPixels.clear();
-	middleBarsPixels.clear();
-	leftRingPixels.show();
-	rightRingPixels.show();
-	middleBarsPixels.show();
+void setupAccelerator(Adafruit_ADXL345_Unified * accelerator)
+{
+	if (!useAccel)
+	{
+		Serial.println("[init::accel] Accel disable");
+		return;
+	}
 
-	attachInterrupt(BREAKING_BUTTON_PIN, breakButtonActivated, FALLING); 
-	attachInterrupt(TURNLEFT_BUTTON_PIN, turnLeftButtonActivated, FALLING); 
-	attachInterrupt(TURNRIGHT_BUTTON_PIN, turnRightButtonActivated, FALLING); 
+	if (!accelerator->begin())
+	{
+		Serial.println("[init::accel] Accel init failed");
+		while (1);
+	}
+	else
+	{
+		Serial.println("[init::accel] Accel init ok");
+		accelAnalysis.init(accelerator, 0, 0.3, 2.0, 6.0);
+	}
+}
 
+void setupAnims()
+{
 	turnAnim.init(&leftRingPixels, &middleBarsPixels, &rightRingPixels);
 	simpleAnim.init(&leftRingPixels, &middleBarsPixels, &rightRingPixels);
 	warningAnim.init(&leftRingPixels, &middleBarsPixels, &rightRingPixels);
 	breakAnim.init(&leftRingPixels, &middleBarsPixels, &rightRingPixels);
-	breakAnim.setLimits(2.0, 6.0);
+}
 
+void setupUserControls(Adafruit_ADS1115 * ads1115)
+{
+	userControlManager.init(ads1115);
 
-	//digitalWrite(led, true);
+	// get a reading to confirm correct initialization
+	UserCtrl_Input input = userControlManager.getInput();
+	Serial.println("[init::controls] init ok");
+}
 
-	//
-	// Displpay init
-	display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
-	delay(2000);
-	display.clearDisplay();
-	display.print("hello!");
+/*
+	SETUP entry point
+*/
+void setup() {
+	pinMode(led, OUTPUT);
+	digitalWrite(led, true);
 
-	accelAnalysis.init(&accel, 0, 0.3);
+	Serial.begin(38400);
+	Serial.println("** Bike Indictor **");
+	Serial.println("[init] starting init...");
+
+	setupLeds(&leftRingPixels);
+	setupLeds(&rightRingPixels);
+	setupLeds(&middleBarsPixels);
+	setupAnims();
+	setupDisplay(&display);
+	setupAccelerator(&accel);
+	setupLipoGauge(&gauge);
+	setupUserControls(&ads);
+	
+	Serial.println("[init] init completed");
 	digitalWrite(led, false);
-	/* Initialise the sensor */
-	if (useAccel)
+}
+
+//void breakButtonActivated()
+//{
+//	cli();
+//	Serial.println("Breaking");
+//	ChangeMode(Mode_manualBreaking);
+//	sei();
+//}
+
+void updateDisplay()
+{
+	// [  main zone  ][indicator zone]
+	uint16_t mainZoneX = 0, mainZoneY = 0, mainZoneW = 128 - 40, mainZoneH = 64;
+	uint16_t indicatorZoneX = mainZoneW + 1, indicatorZoneY = 0, indicatorZoneW = 40, indicatorZoneH = 64;
+
+	// update battery status
+	if (!alert)
 	{
-		if (!accel.begin())
+		double battPercent = gauge.getSOC();
+		if (battPercent > 1.0)
 		{
-			/* There was a problem detecting the ADXL345 ... check your connections */
-			Serial.println("Ooops, no ADXL345 detected ... Check your wiring!");
-			while (1);
+			// powered by external
+			display.setCursor(indicatorZoneX + 1, indicatorZoneY + 1);
+			display.println("EXT");
 		}
 		else
-			Serial.println("ADX345 init'd ok");
+		{
+			// powered by battery
+			display.drawRect(indicatorZoneX + 1, indicatorZoneY + 1, indicatorZoneW - 2, 20, WHITE);
+			display.fillRect(indicatorZoneX + 2, indicatorZoneY + 2, (indicatorZoneW - 4) * battPercent, 18, WHITE);
+		}
 	}
-
-	gauge.reset();
-	gauge.setAlertThreshold(10);
-	Serial.println(String("Alert Threshold is set to ") + gauge.getAlertThreshold() + '%');
-
-	userControlManager.init(&ads);
-}
-
-void breakButtonActivated()
-{
-	cli();
-	Serial.println("Breaking");
-	ChangeMode(Mode_manualBreaking);
-	sei();
-}
-
-void turnLeftButtonActivated()
-{
-	cli();
-	Serial.println("Turning left");
-	ChangeMode(Mode_blinkLeft);
-	sei();
-}
-
-void turnRightButtonActivated()
-{
-	cli();
-	Serial.println("Turning right");
-	ChangeMode(Mode_blinkRight);
-	sei();
-}
-
-// the loop routine runs over and over again forever:
-void loop() {
-
-	display.clearDisplay();
-	display.setCursor(0, 0);
-	display.setTextColor(WHITE, BLACK);
-	display.setTextSize(1);
-
-	bool doDisplayJoystickInfo = true;
-	if (doDisplayJoystickInfo)
+	else
 	{
-		UserCtrl_Input input = userControlManager.getInput();
+		// low battery
+		display.setCursor(indicatorZoneX + 1, indicatorZoneY + 1);
+		display.println("LOW!");
+	}
+	
+	// todo: update accel indicator
+	// todo: update current mode (main zone)
+
+
+
+	display.display();
+}
+
+
+/*
+	LOOP entry point
+*/
+void loop() {
+	//
+	// Update input
+	auto input = userControlManager.getInput();
+	auto isInputDifferent = input != latestInput;
+	if (isInputDifferent)
+	{
 		switch (input)
 		{
-		case UserCtrl_left: display.println("Left"); break;
-		case UserCtrl_right: display.println("Right"); break;
-		case UserCtrl_top: display.println("Top"); break;
-		case UserCtrl_bottom: display.println("Bottom"); break;
-		case UserCtrl_click: display.println("Click"); break;
-		default: display.println("none");
+			case UserCtrl_bottom: currentMode = Mode_none; break;
+			case UserCtrl_top: currentMode = Mode_manualBreaking; break;
+			case UserCtrl_click: currentMode = Mode_warning;  break;
+			case UserCtrl_left: currentMode = Mode_blinkLeft; break;
+			case UserCtrl_right: currentMode = Mode_blinkRight; break;
 		}
-		display.display();
 	}
 
-
-	bool doDisplayBatteryInfo = false;
-	if (doDisplayBatteryInfo)
+	//
+	// Update accel
+	if (useAccel)
 	{
-		Serial.print("Charge: ");
-		Serial.print(gauge.getSOC());  // Gets the battery's state of charge
-		Serial.print("%, VBattery: ");
-		Serial.print(gauge.getVoltage());  // Gets the battery voltage
-		Serial.println('V');
-
-		display.print("Charge: ");
-		display.println(gauge.getSOC());  // Gets the battery's state of charge
-		display.print("%, VBattery: ");
-		display.print(gauge.getVoltage());  // Gets the battery voltage
-		display.println('V');
-		display.display();
+		accelAnalysis.update();
+		auto latestAccel = accelAnalysis.getLatest();
 	}
 
+	//
+	// Update battery
 	if (alert)
 	{
 		Serial.println("Beware, Low Power!");
@@ -209,32 +248,12 @@ void loop() {
 		while (true);
 	}
 
-	digitalWrite(led, true);
-	double latestAccel = 0.0;
-	if (useAccel)
-	{
-		accelAnalysis.update();
-		latestAccel = accelAnalysis.getLatest();
-		Serial.print(latestAccel); Serial.println(" ");
-	}
+	updateDisplay();
 
-	Serial.println(".");
-
-	currentMode = Mode_blinkLeft;
 	switch (currentMode)
 	{
 	case Mode_none:
 		// when no special mode, play simple animation unless the g calculated is higher than the min limit
-		if (breakAnim.isHigherThanMinLimit(latestAccel))
-		{
-			breakAnim.step(latestAccel);
-			delay(100);
-		}
-		else
-		{
-			simpleAnim.step();
-			delay(200);
-		}
 		break;
 
 	case Mode_blinkLeft:
