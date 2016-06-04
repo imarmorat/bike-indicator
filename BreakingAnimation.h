@@ -7,18 +7,10 @@
 	#include "WProgram.h"
 #endif
 
-#include <Adafruit_NeoPixel.h>
-
-class BreakingAnimation
+class BreakingAnimation : public Animation
 {
- protected:
-	 Adafruit_NeoPixel *_leftRing;
-	 Adafruit_NeoPixel *_rightRing;
-	 Adafruit_NeoPixel *_middleBar;
-
  public:
-	 void init(Adafruit_NeoPixel *leftRing, Adafruit_NeoPixel *middleBar, Adafruit_NeoPixel *rightRing);
-	 void step(double breakingLevel);
+	 void step();
 };
 
 #endif

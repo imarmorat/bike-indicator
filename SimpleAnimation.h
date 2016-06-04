@@ -1,5 +1,5 @@
-#ifndef _ANIMATION_h
-#define _ANIMATION_h
+#ifndef _SIMPLEANIMATION_h
+#define _SIMPLEANIMATION_h
 
 #if defined(ARDUINO) && ARDUINO >= 100
 	#include "arduino.h"
@@ -9,20 +9,15 @@
 
 #include <Adafruit_NeoPixel.h>
 
-class SimpleAnimation
+class SimpleAnimation : public Animation
 {
  protected:
 	 int _lrCurrentPosition = 0;
 	 int _rrCurrentPosition = 0;
 	 int _mbCurrentPosition = 0;
-	 int _nbLeds = 16;
-	 Adafruit_NeoPixel *_leftRing;
-	 Adafruit_NeoPixel *_rightRing;
-	 Adafruit_NeoPixel *_middleBar;
 	 int step(Adafruit_NeoPixel * pixels, int position);
 
  public:
-	 void init(Adafruit_NeoPixel *leftRing, Adafruit_NeoPixel *middleBar, Adafruit_NeoPixel *rightRing);
 	 void step();
 };
 

@@ -1,3 +1,4 @@
+#include "Animation.h"
 #include "Helpers.h"
 #include "UserControlManager.h"
 #include "ADS1x15.h"
@@ -29,6 +30,7 @@ void lowPower() { lowPowerAlert = true; }
 bool isAccelerationDetectionEnabled = true;
 Mode currentMode = Mode_none;
 UserCtrl_Input latestInput = UserCtrl_none;
+Animation * currentAnim = NULL;
 
 //
 // Hardware
@@ -48,7 +50,8 @@ uint32_t breakColor = leftRingPixels.Color(0, 255, 0);
 //
 // Animations
 SimpleAnimation simpleAnim;
-TurnAnimation turnAnim;
+TurnAnimation turnLeftAnim;
+TurnAnimation turnRightAnim;
 BreakingAnimation breakAnim;
 WarningAnimation warningAnim;
 
@@ -131,10 +134,15 @@ void setupAccelerator(Adafruit_ADXL345_Unified * accelerator)
 
 void setupAnims()
 {
-	turnAnim.init(&leftRingPixels, &middleBarsPixels, &rightRingPixels);
+	turnLeftAnim.init(&leftRingPixels, &middleBarsPixels, &rightRingPixels);
+	turnLeftAnim.setDirection(0);
+	turnRightAnim.init(&leftRingPixels, &middleBarsPixels, &rightRingPixels);
+	turnRightAnim.setDirection(1);
 	simpleAnim.init(&leftRingPixels, &middleBarsPixels, &rightRingPixels);
 	warningAnim.init(&leftRingPixels, &middleBarsPixels, &rightRingPixels);
 	breakAnim.init(&leftRingPixels, &middleBarsPixels, &rightRingPixels);
+
+	currentAnim = &simpleAnim;
 }
 
 void setupUserControls(Adafruit_ADS1115 * ads1115)
@@ -245,6 +253,8 @@ void setup() {
 	LOOP entry point
 */
 void loop() {
+	digitalWrite(LED_PIN, true);
+	
 	//
 	// Update input
 	auto input = userControlManager.getInput();
@@ -253,12 +263,29 @@ void loop() {
 	{
 		switch (input)
 		{
-			case UserCtrl_bottom: currentMode = Mode_none; break;
-			case UserCtrl_top: currentMode = Mode_manualBreaking; break;
-			case UserCtrl_click: currentMode = Mode_warning;  break;
-			case UserCtrl_left: currentMode = Mode_blinkLeft; break;
-			case UserCtrl_right: currentMode = Mode_blinkRight; break;
+		case UserCtrl_none:
+		case UserCtrl_bottom: 
+			currentMode = Mode_none; 
+			currentAnim = &simpleAnim; 
+			break;
+		case UserCtrl_top: 
+			currentMode = Mode_manualBreaking; 
+			currentAnim = &breakAnim;
+			break;
+		case UserCtrl_click: 
+			currentMode = Mode_warning;  
+			currentAnim = &warningAnim;
+			break;
+		case UserCtrl_left: 
+			currentMode = Mode_blinkLeft; 
+			currentAnim = &turnLeftAnim;
+			break;
+		case UserCtrl_right: 
+			currentMode = Mode_blinkRight; 
+			currentAnim = &turnRightAnim;
+			break;
 		}
+		currentAnim->reset();
 	}
 
 	//
@@ -282,37 +309,17 @@ void loop() {
 	}
 
 	updateDisplay();
+	currentAnim->step();
 
-	switch (currentMode)
-	{
-	case Mode_none:
-		// when no special mode, play simple animation unless the g calculated is higher than the min limit
-		break;
-
-	case Mode_blinkLeft:
-		turnAnim.step(0);
-		break;
-
-	case Mode_blinkRight:
-		turnAnim.step(1);
-		break;
-
-	case Mode_warning:
-		warningAnim.step();
-		break;
-
-	case Mode_manualBreaking:
-		for (int i = 0; i<16; i++)
-		{
-			leftRingPixels.setPixelColor(i, breakColor);
-			rightRingPixels.setPixelColor(i, breakColor);
-			middleBarsPixels.setPixelColor(i, breakColor);
-		}
-		leftRingPixels.show();
-		rightRingPixels.show();
-		middleBarsPixels.show();
-		break;
-	}
+	//for (int i = 0; i<16; i++)
+	//{
+	//	leftRingPixels.setPixelColor(i, breakColor);
+	//	rightRingPixels.setPixelColor(i, breakColor);
+	//	middleBarsPixels.setPixelColor(i, breakColor);
+	//}
+	//leftRingPixels.show();
+	//rightRingPixels.show();
+	//middleBarsPixels.show();
 
 	digitalWrite(LED_PIN, false);
 }

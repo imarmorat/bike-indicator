@@ -76,6 +76,8 @@ void updateDisplay();
 #include <ADXL345.h>
 #include <AccelAnalysis.cpp>
 #include <AccelAnalysis.h>
+#include <Animation.cpp>
+#include <Animation.h>
 #include <BreakingAnimation.cpp>
 #include <BreakingAnimation.h>
 #include <Helpers.cpp>

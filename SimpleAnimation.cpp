@@ -1,11 +1,5 @@
+#include "Animation.h"
 #include "SimpleAnimation.h"
-
-void SimpleAnimation::init(Adafruit_NeoPixel * leftRing, Adafruit_NeoPixel * middleBar, Adafruit_NeoPixel * rightRing)
-{
-	_leftRing = leftRing;
-	_rightRing = rightRing;
-	_middleBar = middleBar;
-}
 
 void SimpleAnimation::step()
 {
@@ -22,6 +16,6 @@ int SimpleAnimation::step(Adafruit_NeoPixel * pixels, int position)
 	//pixels->setPixelColor(previous, pixels->Color(0, 0, 0));
 	pixels->setPixelColor(position, pixels->Color(255, 255, 255));
 	pixels->show();
-	return position + 1 >= _nbLeds ? 0 : position + 1;
+	return position + 1 >= pixels->numPixels() ? 0 : position + 1;
 }
 

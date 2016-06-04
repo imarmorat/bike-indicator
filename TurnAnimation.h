@@ -7,21 +7,15 @@
 	#include "WProgram.h"
 #endif
 
-#include <Adafruit_NeoPixel.h>
-
-class TurnAnimation
+class TurnAnimation : public Animation
 {
 protected:
 	int _currentPosition = 0;
-	int _nbLeds = 16;
-	Adafruit_NeoPixel *_leftRing;
-	Adafruit_NeoPixel *_rightRing;
-	Adafruit_NeoPixel *_middleBar;
+	int _direction = 0; // 0 = left, 1 = right
 
 public:
-	void init(Adafruit_NeoPixel *leftRing, Adafruit_NeoPixel *middleBar, Adafruit_NeoPixel *rightRing);
-	void reset();
-	void step(int direction);
+	void setDirection(int direction);
+	void step();
 };
 
 #endif

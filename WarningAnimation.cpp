@@ -1,11 +1,5 @@
+#include "Animation.h"
 #include "WarningAnimation.h"
-
-void WarningAnimation::init(Adafruit_NeoPixel * leftRing, Adafruit_NeoPixel * middleBar, Adafruit_NeoPixel * rightRing)
-{
-	_leftRing = leftRing;
-	_rightRing = rightRing;
-	_middleBar = middleBar;
-}
 
 void WarningAnimation::step()
 {
