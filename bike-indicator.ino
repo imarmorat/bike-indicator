@@ -17,39 +17,52 @@
 // https://github.com/adafruit/Adafruit_ADXL345
 // https://github.com/adafruit/Adafruit_Sensor
 
-int led = 13;
+#define LED_PIN  13
 #define LEFTRING_PIN 0
 #define RIGHTRING_PIN 2
 #define BAR_PIN 1
-#define BREAKING_BUTTON_PIN 4
-#define TURNLEFT_BUTTON_PIN 5
-#define TURNRIGHT_BUTTON_PIN 6
-uint8_t offset = 0;
 
+//
+// Global vars
+volatile boolean lowPowerAlert = false;
+void lowPower() { lowPowerAlert = true; }
+bool isAccelerationDetectionEnabled = true;
+Mode currentMode = Mode_none;
+UserCtrl_Input latestInput = UserCtrl_none;
+
+//
+// Hardware
 Adafruit_NeoPixel leftRingPixels = Adafruit_NeoPixel(16, LEFTRING_PIN, NEO_RGBW + NEO_KHZ800);
 Adafruit_NeoPixel rightRingPixels = Adafruit_NeoPixel(16, RIGHTRING_PIN, NEO_RGBW + NEO_KHZ800);
 Adafruit_NeoPixel middleBarsPixels = Adafruit_NeoPixel(16, BAR_PIN, NEO_RGBW + NEO_KHZ800);
-uint32_t blinkerColor = leftRingPixels.Color(128, 255, 6);
-uint32_t breakColor = leftRingPixels.Color(0, 255, 0); // green red blue format
+Adafruit_SSD1306 display(6);
+Adafruit_ADXL345_Unified accel = Adafruit_ADXL345_Unified(12345);
+Adafruit_ADS1115 ads;
+LiFuelGauge gauge(MAX17043, 0, lowPower);
 
+//
+// Pre defined colors in GRB format
+uint32_t blinkerColor = leftRingPixels.Color(128, 255, 6);
+uint32_t breakColor = leftRingPixels.Color(0, 255, 0);
+
+//
+// Animations
 SimpleAnimation simpleAnim;
 TurnAnimation turnAnim;
 BreakingAnimation breakAnim;
 WarningAnimation warningAnim;
 
-Adafruit_SSD1306 display(6);
-Adafruit_ADXL345_Unified accel = Adafruit_ADXL345_Unified(12345);
-Adafruit_ADS1115 ads;
+//
+// Svc 
 UserControlManagerClass userControlManager;
-
 AccelAnalysis accelAnalysis;
-volatile boolean alert = false;
-void lowPower() { alert = true; }
-LiFuelGauge gauge(MAX17043, 0, lowPower);
-bool useAccel = true;
 
-Mode currentMode = Mode_none;
-UserCtrl_Input latestInput = UserCtrl_none;
+inline void debug(String msg)
+{
+	Serial.println(msg);
+	display.println(msg);
+	display.display();
+}
 
 void ChangeMode(Mode newMode)
 {
@@ -74,7 +87,7 @@ void setupLeds(Adafruit_NeoPixel * leds)
 	leds->setBrightness(100);
 	leds->clear();
 	leds->show();
-	Serial.println("[init::leds] init ok");
+	debug("[init::leds] init ok");
 }
 
 void setupDisplay(Adafruit_SSD1306 * display)
@@ -85,32 +98,28 @@ void setupDisplay(Adafruit_SSD1306 * display)
 	display->setCursor(0, 0);
 	display->setTextColor(WHITE, BLACK);
 	display->setTextSize(1);
-	Serial.println("[init::display] init ok");
+	debug("[init::display] init ok");
 }
 
 void setupLipoGauge(LiFuelGauge * gauge)
 {
 	gauge->reset();
 	gauge->setAlertThreshold(10);
-	Serial.println(String("[init::gauge] Alert Threshold is set to ") + gauge->getAlertThreshold() + '%');
-	Serial.print("[init::gauge] Charge: ");
-	Serial.print(gauge->getSOC());  // Gets the battery's state of charge
-	Serial.print("%, VBatt: ");
-	Serial.print(gauge->getVoltage());  // Gets the battery voltage
-	Serial.println('V');
+	debug(String("[init::gauge] Alert Threshold is set to ") + gauge->getAlertThreshold() + '%');
+	debug(String("[init::gauge] Charge: ") + gauge->getSOC() + "%, VBatt: " + gauge->getVoltage() + 'V');
 }
 
 void setupAccelerator(Adafruit_ADXL345_Unified * accelerator)
 {
-	if (!useAccel)
+	if (!isAccelerationDetectionEnabled)
 	{
-		Serial.println("[init::accel] Accel disable");
+		debug("[init::accel] Accel disable");
 		return;
 	}
 
 	if (!accelerator->begin())
 	{
-		Serial.println("[init::accel] Accel init failed");
+		debug("[init::accel] Accel init failed");
 		while (1);
 	}
 	else
@@ -133,41 +142,9 @@ void setupUserControls(Adafruit_ADS1115 * ads1115)
 	userControlManager.init(ads1115);
 
 	// get a reading to confirm correct initialization
-	UserCtrl_Input input = userControlManager.getInput();
-	Serial.println("[init::controls] init ok");
+	auto input = userControlManager.getInput();
+	debug("[init::controls] init ok");
 }
-
-/*
-	SETUP entry point
-*/
-void setup() {
-	pinMode(led, OUTPUT);
-	digitalWrite(led, true);
-
-	Serial.begin(38400);
-	Serial.println("** Bike Indictor **");
-	Serial.println("[init] starting init...");
-
-	setupLeds(&leftRingPixels);
-	setupLeds(&rightRingPixels);
-	setupLeds(&middleBarsPixels);
-	setupAnims();
-	setupDisplay(&display);
-	setupAccelerator(&accel);
-	setupLipoGauge(&gauge);
-	setupUserControls(&ads);
-	
-	Serial.println("[init] init completed");
-	digitalWrite(led, false);
-}
-
-//void breakButtonActivated()
-//{
-//	cli();
-//	Serial.println("Breaking");
-//	ChangeMode(Mode_manualBreaking);
-//	sei();
-//}
 
 void updateDisplay()
 {
@@ -176,7 +153,7 @@ void updateDisplay()
 	uint16_t indicatorZoneX = mainZoneW + 1, indicatorZoneY = 0, indicatorZoneW = 40, indicatorZoneH = 64;
 
 	// update battery status
-	if (!alert)
+	if (!lowPowerAlert)
 	{
 		double battPercent = gauge.getSOC();
 		if (battPercent > 1.0)
@@ -198,15 +175,71 @@ void updateDisplay()
 		display.setCursor(indicatorZoneX + 1, indicatorZoneY + 1);
 		display.println("LOW!");
 	}
-	
-	// todo: update accel indicator
-	// todo: update current mode (main zone)
 
+	//
+	// Show accel indicator
+	// TODO
 
+	//
+	// Update the main zone to reflect the current mode
+	// TODO: using icons in the future?
+	display.fillRect(mainZoneX, mainZoneY, mainZoneW, mainZoneH, BLACK);
+	switch (currentMode)
+	{
+	case Mode_blinkLeft:
+		display.drawTriangle(
+			mainZoneX + mainZoneW - 10, mainZoneY + 10,
+			mainZoneX + mainZoneW - 10, mainZoneY + mainZoneH - 10,
+			mainZoneX + 10, mainZoneY + mainZoneH / 2,
+			WHITE);
+		break;
+
+	case Mode_blinkRight:
+		display.drawTriangle(
+			mainZoneX + 10, mainZoneY + 10,
+			mainZoneX + 10, mainZoneY + mainZoneH - 10,
+			mainZoneX + mainZoneW - 10, mainZoneY + mainZoneH / 2,
+			WHITE);
+		break;
+
+	case Mode_manualBreaking:
+		display.fillRect(mainZoneX + 10, mainZoneY + 10, mainZoneX + mainZoneW - 10, mainZoneY + mainZoneH - 10, WHITE);
+		break;
+
+	case Mode_warning:
+		display.drawCircle(mainZoneX + mainZoneW / 2 - 2, mainZoneY + mainZoneH / 2 - 2, 10, WHITE);
+		break;
+
+	case Mode_none:
+		break;
+	}
 
 	display.display();
 }
 
+/*
+	SETUP entry point
+*/
+void setup() {
+	pinMode(LED_PIN, OUTPUT);
+	digitalWrite(LED_PIN, true);
+	Serial.begin(38400);
+	
+	debug("** Bike Indictor **");
+	debug("[init] starting init...");
+
+	setupLeds(&leftRingPixels);
+	setupLeds(&rightRingPixels);
+	setupLeds(&middleBarsPixels);
+	setupAnims();
+	setupDisplay(&display);
+	setupAccelerator(&accel);
+	setupLipoGauge(&gauge);
+	setupUserControls(&ads);
+	
+	debug("[init] init completed");
+	digitalWrite(LED_PIN, false);
+}
 
 /*
 	LOOP entry point
@@ -230,7 +263,7 @@ void loop() {
 
 	//
 	// Update accel
-	if (useAccel)
+	if (isAccelerationDetectionEnabled)
 	{
 		accelAnalysis.update();
 		auto latestAccel = accelAnalysis.getLatest();
@@ -238,12 +271,12 @@ void loop() {
 
 	//
 	// Update battery
-	if (alert)
+	if (lowPowerAlert)
 	{
-		Serial.println("Beware, Low Power!");
-		Serial.println("Stopping");
+		debug("Beware, Low Power!");
+		debug("Stopping");
 		gauge.clearAlertInterrupt();  // Resets the ALRT pin
-		alert = false;
+		lowPowerAlert = false;
 		gauge.sleep();  // Forces the MAX17043 into sleep mode
 		while (true);
 	}
@@ -281,5 +314,13 @@ void loop() {
 		break;
 	}
 
-	digitalWrite(led, false);
+	digitalWrite(LED_PIN, false);
 }
+
+//void breakButtonActivated()
+//{
+//	cli();
+//	Serial.println("Breaking");
+//	ChangeMode(Mode_manualBreaking);
+//	sei();
+//}
