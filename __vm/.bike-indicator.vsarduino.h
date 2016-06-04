@@ -57,6 +57,7 @@ typedef void *__builtin_va_list;
 #define NEW_H
 
 void lowPower();
+void accelThreasholdBreachedCallback(int value);
 inline void debug(String msg);
 void ChangeMode(Mode newMode);
 void setupLeds(Adafruit_NeoPixel * leds);

@@ -27,6 +27,8 @@
 // Global vars
 volatile boolean lowPowerAlert = false;
 void lowPower() { lowPowerAlert = true; }
+volatile boolean accelerationThresholdBreached = false;
+void accelThreasholdBreachedCallback(int value) { accelerationThresholdBreached = true; }
 bool isAccelerationDetectionEnabled = true;
 Mode currentMode = Mode_none;
 UserCtrl_Input latestInput = UserCtrl_none;
@@ -128,7 +130,7 @@ void setupAccelerator(Adafruit_ADXL345_Unified * accelerator)
 	else
 	{
 		Serial.println("[init::accel] Accel init ok");
-		accelAnalysis.init(accelerator, 0, 0.3, 2.0, 6.0);
+		accelAnalysis.init(accelerator, 0, 0.3, 2.0, 6.0, accelThreasholdBreachedCallback);
 	}
 }
 
@@ -292,10 +294,7 @@ void loop() {
 	//
 	// Update accel
 	if (isAccelerationDetectionEnabled)
-	{
 		accelAnalysis.update();
-		auto latestAccel = accelAnalysis.getLatest();
-	}
 
 	//
 	// Update battery
@@ -311,16 +310,6 @@ void loop() {
 
 	updateDisplay();
 	currentAnim->step();
-
-	//for (int i = 0; i<16; i++)
-	//{
-	//	leftRingPixels.setPixelColor(i, breakColor);
-	//	rightRingPixels.setPixelColor(i, breakColor);
-	//	middleBarsPixels.setPixelColor(i, breakColor);
-	//}
-	//leftRingPixels.show();
-	//rightRingPixels.show();
-	//middleBarsPixels.show();
 
 	digitalWrite(LED_PIN, false);
 }
