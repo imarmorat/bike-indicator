@@ -10,7 +10,9 @@
 class WarningAnimation : public Animation
 {
 protected:
-
+	unsigned long _lastMillis = 0;
+	int _stepCount = 0;
+	bool _switchOn = true;
 public:
 	void step();
 };

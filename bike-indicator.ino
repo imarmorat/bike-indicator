@@ -132,7 +132,7 @@ void setupAccelerator(Adafruit_ADXL345_Unified * accelerator)
 	}
 }
 
-void setupAnims()
+void setupAnims() 
 {
 	turnLeftAnim.init(&leftRingPixels, &middleBarsPixels, &rightRingPixels);
 	turnLeftAnim.setDirection(0);
@@ -143,6 +143,7 @@ void setupAnims()
 	breakAnim.init(&leftRingPixels, &middleBarsPixels, &rightRingPixels);
 
 	currentAnim = &simpleAnim;
+	currentAnim->reset();
 }
 
 void setupUserControls(Adafruit_ADS1115 * ads1115)

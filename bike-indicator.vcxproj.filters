@@ -13,6 +13,18 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source Files\Anim">
+      <UniqueIdentifier>{a1c1410c-ffb4-4e04-b982-a7dcd45a648b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Anim">
+      <UniqueIdentifier>{0814f557-b36e-41f9-aa21-2425a0d99a3d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Hardware">
+      <UniqueIdentifier>{692793d6-f479-484c-94b6-93e7b1c58887}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Hardware">
+      <UniqueIdentifier>{eca60df7-ef84-4e66-a451-66c093bc6ebc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="bike-indicator.ino" />
@@ -21,37 +33,10 @@
     <ClInclude Include="__vm\.bike-indicator.vsarduino.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SimpleAnimation.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TurnAnimation.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="BreakingAnimation.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="defs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="WarningAnimation.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="AccelAnalysis.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="LiPoFuel.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SSD1306.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="i2c_t3.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ADXL345.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ADS1x15.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="UserControlManager.h">
@@ -60,39 +45,39 @@
     <ClInclude Include="Helpers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="BreakingAnimation.h">
+      <Filter>Header Files\Anim</Filter>
+    </ClInclude>
+    <ClInclude Include="SimpleAnimation.h">
+      <Filter>Header Files\Anim</Filter>
+    </ClInclude>
+    <ClInclude Include="TurnAnimation.h">
+      <Filter>Header Files\Anim</Filter>
+    </ClInclude>
     <ClInclude Include="Animation.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Anim</Filter>
+    </ClInclude>
+    <ClInclude Include="ADS1x15.h">
+      <Filter>Header Files\Hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="ADXL345.h">
+      <Filter>Header Files\Hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="i2c_t3.h">
+      <Filter>Header Files\Hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="LiPoFuel.h">
+      <Filter>Header Files\Hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="SSD1306.h">
+      <Filter>Header Files\Hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="WarningAnimation.h">
+      <Filter>Header Files\Anim</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="SimpleAnimation.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TurnAnimation.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="BreakingAnimation.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="WarningAnimation.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="AccelAnalysis.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="LiPoFuel.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SSD1306.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="i2c_t3.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ADXL345.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ADS1x15.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="UserControlManager.cpp">
@@ -102,7 +87,34 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Animation.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Anim</Filter>
+    </ClCompile>
+    <ClCompile Include="BreakingAnimation.cpp">
+      <Filter>Source Files\Anim</Filter>
+    </ClCompile>
+    <ClCompile Include="SimpleAnimation.cpp">
+      <Filter>Source Files\Anim</Filter>
+    </ClCompile>
+    <ClCompile Include="WarningAnimation.cpp">
+      <Filter>Source Files\Anim</Filter>
+    </ClCompile>
+    <ClCompile Include="ADS1x15.cpp">
+      <Filter>Source Files\Hardware</Filter>
+    </ClCompile>
+    <ClCompile Include="ADXL345.cpp">
+      <Filter>Source Files\Hardware</Filter>
+    </ClCompile>
+    <ClCompile Include="i2c_t3.cpp">
+      <Filter>Source Files\Hardware</Filter>
+    </ClCompile>
+    <ClCompile Include="LiPoFuel.cpp">
+      <Filter>Source Files\Hardware</Filter>
+    </ClCompile>
+    <ClCompile Include="SSD1306.cpp">
+      <Filter>Source Files\Hardware</Filter>
+    </ClCompile>
+    <ClCompile Include="TurnAnimation.cpp">
+      <Filter>Source Files\Anim</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

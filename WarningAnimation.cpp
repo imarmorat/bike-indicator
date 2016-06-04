@@ -3,21 +3,48 @@
 
 void WarningAnimation::step()
 {
-	for (int i = 0; i < 16; i++)
-	{
-		_leftRing->setPixelColor(i, _leftRing->Color(128, 255, 6));
-		_rightRing->setPixelColor(i, _rightRing->Color(128, 255, 6));
-		_middleBar->setPixelColor(i, _middleBar->Color(128, 255, 6));
-	}
-	_leftRing->show(); _rightRing->show(); _middleBar->show();
-	delay(800);
+	uint32_t warningColor = _middleBar->Color(128, 255, 6);
 
-	for (int i = 0; i < 16; i++)
+	//
+	// switch on or off the whole leds display
+	if (_stepCount == 0)
 	{
-		_leftRing->setPixelColor(i, _leftRing->Color(0, 0, 0));
-		_rightRing->setPixelColor(i, _rightRing->Color(0, 0, 0));
-		_middleBar->setPixelColor(i, _middleBar->Color(0, 0, 0));
+		if (_switchOn)
+		{
+			for (int i = 0; i < _middleBar->numPixels(); i++)
+				_middleBar->setPixelColor(i, warningColor);
+
+			for (int i = 0; i < _leftRing->numPixels(); i++)
+				_leftRing->setPixelColor(i, warningColor);
+
+			for (int i = 0; i < _rightRing->numPixels(); i++)
+				_rightRing->setPixelColor(i, warningColor);
+
+			_switchOn = false;
+		}
+		else
+		{
+			_middleBar->clear();
+			_leftRing->clear();
+			_rightRing->clear();
+			_switchOn = true;
+		}
+
+		_middleBar->show();
+		_leftRing->show();
+		_rightRing->show();
+		
+		// start delay
+		_lastMillis = millis();
+		_stepCount++;
 	}
-	_leftRing->show(); _rightRing->show(); _middleBar->show();
-	delay(800);
+
+	// 
+	// check delay reached
+	if (_stepCount == 1)
+	{
+		unsigned long currentMillis = millis();
+		if (currentMillis - _lastMillis >= 800)
+			_stepCount = 0;
+	}
 }
