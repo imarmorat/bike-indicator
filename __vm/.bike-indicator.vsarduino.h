@@ -57,7 +57,7 @@ typedef void *__builtin_va_list;
 #define NEW_H
 
 void lowPower();
-inline void debug(String msg);
+void debug(String msg);
 void ChangeMode(Mode newMode);
 void setupLeds(Adafruit_NeoPixel * leds);
 void setupDisplay(Adafruit_SSD1306 * display);
