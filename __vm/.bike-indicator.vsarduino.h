@@ -88,6 +88,8 @@ void updateDisplay();
 #include <SSD1306.h>
 #include <SimpleAnimation.cpp>
 #include <SimpleAnimation.h>
+#include <TrailAnimation.cpp>
+#include <TrailAnimation.h>
 #include <TurnAnimation.cpp>
 #include <TurnAnimation.h>
 #include <UserControlManager.cpp>

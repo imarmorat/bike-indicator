@@ -1,4 +1,6 @@
+
 #include "Animation.h"
+#include "TrailAnimation.h"
 #include "Helpers.h"
 #include "UserControlManager.h"
 #include "ADS1x15.h"
@@ -49,6 +51,7 @@ uint32_t breakColor = leftRingPixels.Color(0, 255, 0);
 
 //
 // Animations
+TrailAnimation trailAnim;
 SimpleAnimation simpleAnim;
 TurnAnimation turnLeftAnim;
 TurnAnimation turnRightAnim;
@@ -142,8 +145,9 @@ void setupAnims()
 	simpleAnim.init(&leftRingPixels, &middleBarsPixels, &rightRingPixels);
 	warningAnim.init(&leftRingPixels, &middleBarsPixels, &rightRingPixels);
 	breakAnim.init(&leftRingPixels, &middleBarsPixels, &rightRingPixels);
+	trailAnim.init(&leftRingPixels, &middleBarsPixels, &rightRingPixels);
 
-	currentAnim = &simpleAnim;
+	currentAnim = &trailAnim;
 	currentAnim->reset();
 }
 

@@ -42,7 +42,7 @@ void TurnAnimation::step()
 		}
 		_middleBar->show();
 
-		if (_currGradStep++ >= 8)
+		if (_currGradStep++ >= 7)
 		{
 			_currStep++;
 			_currGradStep = 0;
