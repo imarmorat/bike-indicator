@@ -59,6 +59,7 @@ TurnAnimation turnLeftAnim;
 TurnAnimation turnRightAnim;
 BreakingAnimation breakAnim;
 WarningAnimation warningAnim;
+int idlingAnimIndex = 0;
 
 //
 // Svc 
@@ -233,6 +234,18 @@ void updateDisplay()
 	display.display();
 }
 
+Animation * getNextIdlingAnim()
+{
+	int animCount = 2;
+	idlingAnimIndex = (idlingAnimIndex + 1) % animCount;
+	switch (idlingAnimIndex)
+	{
+	case 0: return &simpleAnim;
+	case 1: return &trailAnim;
+	default: return &simpleAnim;
+	}
+}
+
 /*
 	SETUP entry point
 */
@@ -276,7 +289,7 @@ void loop() {
 		case UserCtrl_none: break;
 		case UserCtrl_bottom: 
 			currentMode = Mode_none; 
-			currentAnim = &simpleAnim; 
+			currentAnim = getNextIdlingAnim();
 			break;
 		case UserCtrl_top: 
 			currentMode = Mode_manualBreaking; 
