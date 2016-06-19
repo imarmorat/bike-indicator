@@ -1,4 +1,6 @@
+
 #include "Animation.h"
+#include "TrailAnimation.h"
 #include "Helpers.h"
 #include "UserControlManager.h"
 #include "ADS1x15.h"
@@ -51,6 +53,7 @@ uint32_t breakColor = leftRingPixels.Color(0, 255, 0);
 
 //
 // Animations
+TrailAnimation trailAnim;
 SimpleAnimation simpleAnim;
 TurnAnimation turnLeftAnim;
 TurnAnimation turnRightAnim;
@@ -62,11 +65,11 @@ WarningAnimation warningAnim;
 UserControlManagerClass userControlManager;
 AccelAnalysis accelAnalysis;
 
-inline void debug(String msg)
+void debug(String msg)
 {
 	Serial.println(msg);
-	display.println(msg);
-	display.display();
+	//display.println(msg);
+	//display.display();
 }
 
 void ChangeMode(Mode newMode)
@@ -110,6 +113,7 @@ void setupLipoGauge(LiFuelGauge * gauge)
 {
 	gauge->reset();
 	gauge->setAlertThreshold(10);
+	delay(1000);
 	debug(String("[init::gauge] Alert Threshold is set to ") + gauge->getAlertThreshold() + '%');
 	debug(String("[init::gauge] Charge: ") + gauge->getSOC() + "%, VBatt: " + gauge->getVoltage() + 'V');
 }
@@ -143,8 +147,9 @@ void setupAnims()
 	simpleAnim.init(&leftRingPixels, &middleBarsPixels, &rightRingPixels);
 	warningAnim.init(&leftRingPixels, &middleBarsPixels, &rightRingPixels);
 	breakAnim.init(&leftRingPixels, &middleBarsPixels, &rightRingPixels);
+	trailAnim.init(&leftRingPixels, &middleBarsPixels, &rightRingPixels);
 
-	currentAnim = &simpleAnim;
+	currentAnim = &trailAnim;
 	currentAnim->reset();
 }
 
@@ -166,7 +171,7 @@ void updateDisplay()
 	// update battery status
 	if (!lowPowerAlert)
 	{
-		double battPercent = gauge.getSOC();
+		double battPercent = gauge.getSOC() / 100.0;
 		if (battPercent > 1.0)
 		{
 			// powered by external
@@ -214,7 +219,7 @@ void updateDisplay()
 		break;
 
 	case Mode_manualBreaking:
-		display.fillRect(mainZoneX + 10, mainZoneY + 10, mainZoneX + mainZoneW - 10, mainZoneY + mainZoneH - 10, WHITE);
+		display.drawRect(mainZoneX + 10, mainZoneY + 10, mainZoneX + mainZoneW - 10, mainZoneY + mainZoneH - 10, WHITE);
 		break;
 
 	case Mode_warning:
@@ -235,15 +240,15 @@ void setup() {
 	pinMode(LED_PIN, OUTPUT);
 	digitalWrite(LED_PIN, true);
 	Serial.begin(38400);
-	
+
 	debug("** Bike Indictor **");
 	debug("[init] starting init...");
+	setupDisplay(&display);
 
 	setupLeds(&leftRingPixels);
 	setupLeds(&rightRingPixels);
 	setupLeds(&middleBarsPixels);
 	setupAnims();
-	setupDisplay(&display);
 	setupAccelerator(&accel);
 	setupLipoGauge(&gauge);
 	setupUserControls(&ads);
@@ -257,16 +262,18 @@ void setup() {
 */
 void loop() {
 	digitalWrite(LED_PIN, true);
-	
+	//debug(String("[init::gauge] Charge: ") + gauge.getVoltage());
+
 	//
 	// Update input
 	auto input = userControlManager.getInput();
 	auto isInputDifferent = input != latestInput;
 	if (isInputDifferent)
 	{
+		debug(String("[run] different input detected: ") + input);
 		switch (input)
 		{
-		case UserCtrl_none:
+		case UserCtrl_none: break;
 		case UserCtrl_bottom: 
 			currentMode = Mode_none; 
 			currentAnim = &simpleAnim; 
@@ -288,7 +295,11 @@ void loop() {
 			currentAnim = &turnRightAnim;
 			break;
 		}
-		currentAnim->reset();
+
+		if (input != UserCtrl_none)
+			currentAnim->reset();
+		latestInput = input;
+
 	}
 
 	//

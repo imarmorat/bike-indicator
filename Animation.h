@@ -15,6 +15,7 @@ class Animation
 	 Adafruit_NeoPixel *_leftRing;
 	 Adafruit_NeoPixel *_rightRing;
 	 Adafruit_NeoPixel *_middleBar;
+	 virtual void internalInit() {};
 
  public:
 	 void init(Adafruit_NeoPixel *leftRing, Adafruit_NeoPixel *middleBar, Adafruit_NeoPixel *rightRing)
@@ -22,7 +23,10 @@ class Animation
 		 _leftRing = leftRing;
 		 _rightRing = rightRing;
 		 _middleBar = middleBar;
+
+		 internalInit();
 	 }
+
 
 	virtual void reset() 
 	{

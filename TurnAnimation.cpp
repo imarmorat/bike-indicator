@@ -23,6 +23,8 @@ void TurnAnimation::step()
 	// first step is the gradient display on middle bar
 	if (_currStep == 0)
 	{
+		// TODO: on one direction, getting green. it seems that it gets the right color but somehow is overriden
+
 		auto redGrad = rs + _currGradStep * (re - rs) / (gradientSteps - 1);
 		auto greenGrad = gs + _currGradStep * (ge - gs) / (gradientSteps - 1);
 		auto blueGrad = bs + _currGradStep * (be - bs) / (gradientSteps - 1);
@@ -40,7 +42,7 @@ void TurnAnimation::step()
 		}
 		_middleBar->show();
 
-		if (_currGradStep++ >= 8)
+		if (_currGradStep++ >= 7)
 		{
 			_currStep++;
 			_currGradStep = 0;
@@ -98,11 +100,12 @@ void TurnAnimation::step()
 			_currGradStep = 0;
 			_currStep++;
 		}
+		_middleBar->show();
 	}
 
 	//
 	// final step, clear all
-	if (_currStep == 3)
+	if (_currStep == 4)
 	{
 		for (int i = 0; i<16; i++)
 		{
@@ -119,6 +122,7 @@ void TurnAnimation::step()
 		case 1:_rightRing->show(); break;
 		}
 
+		_currGradStep = 0;
 		_currStep = 0;
 	}
 }
